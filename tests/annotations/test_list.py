@@ -1,4 +1,5 @@
-from dirtcastle.annotations import Annotation, AnnotationList
+from dirtcastle.annotations.base import Annotation
+from dirtcastle.annotations.list import AnnotationList
 
 
 def test_combinations():
@@ -50,18 +51,18 @@ def test_disambiguate():
     assert A2 not in annotations
 
 
-def test_to_cells():
-    A1 = Annotation('hello', (0, 4))
-    A2 = Annotation('hell', (0, 3))
-    B1 = Annotation('world', (6, 10))
-    B2 = Annotation('world!', (6, 11))
-    C = Annotation('!', (11, 11))
+def test_cells():
+    A1 = Annotation('hello', (0, 4), type='Greeting')
+    A2 = Annotation('hell', (0, 3), type='Place')
+    B1 = Annotation('world!', (6, 11), type='Place')
+    B2 = Annotation('world', (6, 10), type='Place')
+    C = Annotation('!', (11, 11), type='Symbol')
 
     annotations = AnnotationList([A1, A2, B1, B2, C])
-    assert annotations.to_cells() == [
-        {A1, A2},
-        {B1, B2},
-        {C},
+    assert annotations.cells == [
+        [A1, A2],
+        [B1, B2],
+        [C],
     ]
 
 
@@ -79,3 +80,13 @@ def test_filter_and_boost():
     assert A1.score == 1.25
     assert A2.score == 1.0
     assert B.score == 1.0
+
+    annotations.cells[0].filter(type='Place').boost(1.50)
+    assert A1.score == 1.25
+    assert A2.score == 1.50
+    assert B.score == 1.0
+
+    annotations.cells[1].boost(1.75)
+    assert A1.score == 1.25
+    assert A2.score == 1.50
+    assert B.score == 1.75

@@ -1,3 +1,5 @@
+import functools
+
 from .base import Annotation
 from .span import Span
 
@@ -19,6 +21,7 @@ class AnnotationList(list):
                 break
         else:  # no break
             i += 1
+        self._cells = None
         return super().insert(i, new_annotation)
 
     def select_from_position(self, position):
@@ -27,23 +30,24 @@ class AnnotationList(list):
                 yield from self[index:]
                 break
 
-    def collisions_at(self, position):
+    def collisions(self, position):
         if isinstance(position, Annotation):
             position = position.span.end + 1
 
-        annotations = self.select_from_position(position)
         collisions = set()
-        for annotation in annotations:
+
+        for annotation in self.select_from_position(position):
             if not collisions:
                 # the first annotation gets a free pass
                 collisions.add(annotation)
+                shortest_collision = annotation
             else:
-                # following annotations must collide with all the annotations
-                # of the collision set
-                for collision in collisions:
-                    if annotation.span not in collision.span:
-                        # annotation does not collide, return the collisions
-                        return collisions
+                # new annotations must collide with the shortest
+                # annotation in the collision list
+                if annotation.span not in shortest_collision.span:
+                    return collisions
+                if annotation.span.length < shortest_collision.span.length:
+                    shortest_collision = annotation
                 collisions.add(annotation)
 
         return collisions
@@ -51,67 +55,65 @@ class AnnotationList(list):
     def combinations(self):
         """Yields all possible non-colliding combinations"""
         self._subcombination_cache = {}
-        for root_annotation in self.collisions_at(0):
+        for root_annotation in self.collisions(0):
             yield from self._subcombinations(root_annotation)
         del self._subcombination_cache
 
     def _subcombinations(self, annotation):
         if annotation not in self._subcombination_cache:
             paths = []
-            next_collisions = self.collisions_at(annotation)
+            next_collisions = self.collisions(annotation)
             if not next_collisions:
                 paths.append((annotation,))
             else:
-                # TODO: Performance improvement
-                # Checking against all other collisions in the group
-                # is actually not needed.
-                # For a new collision to be added, it is only required
-                # check against the shortest annotation.
                 for collision in next_collisions:
                     for path in self._subcombinations(collision):
                         paths.append((annotation,) + path)
             self._subcombination_cache[annotation] = paths
         return self._subcombination_cache[annotation]
 
-    # TODO: maybe rename combinations to interpretations
-    interpretations = combinations
-
     def disambiguate(self, discard_others=False):
         """Computes the best total-scoring set of annotations to keep
         and discards the others.
         """
         best_score = 0
-        best_interpretation = []
+        best_combination = []
 
-        for interpretation in self.interpretations():
-            score = sum([annotation.score for annotation in interpretation])
+        for combination in self.combinations():
+            score = sum([annotation.score for annotation in combination])
             if score > best_score:
-                best_interpretation = interpretation
+                best_combination = combination
                 best_score = score
 
         if discard_others:
             for annotation in self:
-                if annotation not in best_interpretation:
+                if annotation not in best_combination:
                     self.remove(annotation)
 
-        return best_interpretation
+        return best_combination
 
-    def to_cells(self):
-        """Groups annotations into possible table cells."""
-        cells = [self.collisions_at(0)]
+    @property
+    def cells(self):
+        """Groups annotations into possible table cells.
 
-        while len(cells[-1]) > 0:
-            next_position = 1 + min([
-                annotation.span.end for annotation in cells[-1]
-            ])
-            cells.append(self.collisions_at(next_position))
+        TODO: place annotations in cells on-the-go instead of complete
+              recomputation on addition
+        """
+        if not self._cells:
+            cells = [AnnotationList(self.collisions(0))]
 
-        return cells[:-1]
+            while len(cells[-1]) > 0:
+                next_position = 1 + min([
+                    annotation.span.end for annotation in cells[-1]
+                ])
+                cells.append(AnnotationList(self.collisions(next_position)))
+
+            self._cells = cells[:-1]
+        return self._cells
 
     def boost(self, multiplier):
         for annotation in self:
             annotation.score *= multiplier
-        return self
 
     def filter(self, **kwargs):
         sublist = AnnotationList()
