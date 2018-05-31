@@ -1,3 +1,5 @@
+import json
+
 from dirtcastle.annotations.base import Annotation
 
 

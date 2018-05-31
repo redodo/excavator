@@ -1,3 +1,4 @@
+import json
 import pytest
 
 from dirtcastle.annotations.span import Span
@@ -8,6 +9,7 @@ def test_init():
     assert Span(1, 0) == Span(0, 1)
     assert Span(Span(1, 2)) == Span(1, 2)
     assert Span((1, 2)) == Span(1, 2)
+    assert Span(slice(1, 3)) == Span(1, 3)
 
 
 def test_attributes():
@@ -73,3 +75,13 @@ def test_sub():
 def test_len():
     assert len(Span(0, 5)) == 6
     assert len(Span(0, 0)) == 1
+
+
+def test_json():
+    span = Span(1, 4)
+
+    json_span = json.dumps(span)
+    assert json_span == '[1, 4]'
+
+    rebuilt = Span(json.loads(json_span))
+    assert span == rebuilt

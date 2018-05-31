@@ -11,6 +11,10 @@ class Span(tuple):
         if callable(start):
             start = start()
 
+        if isinstance(start, slice):
+            end = start.stop
+            start = start.start
+
         if isinstance(start, cls.LIST_TYPES):
             start, end = start
         elif end is None:

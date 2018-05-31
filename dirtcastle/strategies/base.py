@@ -7,7 +7,7 @@ class Strategy:
         )
 
 
-class CompleteStrategy(Strategy):
+class CellStrategy(Strategy):
 
     def apply(self, text):
         for y, line in enumerate(text.lines):

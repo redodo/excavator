@@ -1,10 +1,10 @@
 import functools
 import math
 
-from .base import CompleteStrategy
+from .base import CellStrategy
 
 
-class NearbyTypeStrategy(CompleteStrategy):
+class NearbyTypeStrategy(CellStrategy):
 
     def __init__(self, max_boost, min_boost, v_reach, h_reach):
         self.max_boost = max_boost
@@ -30,7 +30,7 @@ class NearbyTypeStrategy(CompleteStrategy):
             dy=max(dx, dy),
         )
 
-    @functools.lru_cache(64)
+    @functools.lru_cache(256)
     def _compute_boost(self, dx, dy):
         distance = math.sqrt(dx**2 + dy**2)
         factor = 1 - (distance - self.min_reach) / self.reach
@@ -43,7 +43,9 @@ class NearbyTypeStrategy(CompleteStrategy):
                     continue
                 try:
                     boost = self.compute_boost(dx, dy)
-                    text.lines[y+dy].cells[x+dx] \
-                        .filter(type=annotation.type).boost(boost)
+                    text.lines[y+dy] \
+                        .cells[x+dx] \
+                        .filter(type=annotation.type) \
+                        .boost(boost)
                 except IndexError:
                     continue
