@@ -1,10 +1,8 @@
 import re
 
 from ..annotations.base import Annotation
-from ..utils import find_all
+from .utils import find_all
 from .registry import registry
-
-
 
 
 class AnnotatorBase(type):

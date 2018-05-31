@@ -30,7 +30,7 @@ class Annotation:
 
     def __eq__(self, other):
         if not isinstance(other, Annotation):
-            return NotImplemented
+            return False
 
         return (
             self.text == other.text and

@@ -1,3 +1,4 @@
+from .agent import default_agent
 from .base import TextAnnotator, RegexAnnotator
 
 
@@ -21,5 +22,9 @@ def build_annotator(base, type_name, patterns, case_sensitive=None):
 
 
 def build_annotator_from_dict(data):
-    data['type_name'] = data.pop('type', None)
+    data['type_name'] = data.pop('type', data.get('type_name', None))
     return build_annotator(**data)
+
+
+def annotate(*args, **kwargs):
+    return default_agent.annotate(*args, **kwargs)

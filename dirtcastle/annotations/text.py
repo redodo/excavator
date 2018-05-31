@@ -19,7 +19,12 @@ class AnnotatedText:
 
     def disambiguate(self, *args, **kwargs):
         for line in self.lines:
-            line.disambiguate(*args, **kwargs)
+            line.annotations.disambiguate(*args, **kwargs)
+
+    def __eq__(self, other):
+        if not isinstance(other, AnnotatedText):
+            return False
+        return self.lines == other.lines
 
     def __repr__(self):
         rep = '<AnnotatedText(lines=[{}])>'
@@ -49,11 +54,20 @@ class AnnotatedLine:
         else:
             self.annotations = AnnotationList(annotations or [])
 
+    @property
+    def cells(self):
+        return self.annotations.cells
+
     def copy(self):
         return AnnotatedLine(
             text=self.text,
             annotations=self.annotations.copy(),
         )
+
+    def __eq__(self, other):
+        if not isinstance(other, AnnotatedLine):
+            return False
+        return self.text == other.text and self.annotations == other.annotations
 
     def __add__(self, other):
         if not isinstance(other, AnnotatedLine):

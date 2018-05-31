@@ -9,12 +9,11 @@ from dirtcastle.annotators.helpers import (
 
 
 def test_build_annotator():
-    annotator_data = {
-        'base': 'text',
-        'type_name': 'Hello',
-        'patterns': ['hello'],
-    }
-    annotator_class = build_annotator(**annotator_data)
+    annotator_class = build_annotator(
+        base='text',
+        type_name='Hello',
+        patterns=['hello'],
+    )
     assert annotator_class in registry
     annotator = annotator_class()
 
