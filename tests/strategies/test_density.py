@@ -7,7 +7,7 @@ def test_increase_density():
     agent = Agent()
 
     agent.add_strategy(
-        IncreaseDensityStrategy(12)
+        IncreaseDensityStrategy(10)
     )
 
     class GreetingAnnotator(TextAnnotator):
