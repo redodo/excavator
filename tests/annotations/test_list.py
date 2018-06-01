@@ -3,13 +3,13 @@ from dirtcastle.annotations.list import AnnotationList
 
 
 def test_combinations():
-    A1 = Annotation('hello', (0, 4))
-    A2 = Annotation('hell', (0, 3))
-    A3 = Annotation('hello world', (0, 10))
-    B1 = Annotation('world', (6, 10))
-    B2 = Annotation('worl', (6, 9))
-    B3 = Annotation('world!', (6, 11))
-    C = Annotation('!', (11, 11))
+    A1 = Annotation('hello', (0, 5))
+    A2 = Annotation('hell', (0, 4))
+    A3 = Annotation('hello world', (0, 11))
+    B1 = Annotation('world', (6, 11))
+    B2 = Annotation('worl', (6, 10))
+    B3 = Annotation('world!', (6, 12))
+    C = Annotation('!', (11, 12))
 
     annotations = AnnotationList([A1, A2, A3, B1, B2, B3, C])
 
@@ -25,9 +25,9 @@ def test_combinations():
 
 
 def test_ordering():
-    A = Annotation('hello', (0, 4))
-    B = Annotation('hell', (0, 3))
-    C = Annotation('world', (6, 10))
+    A = Annotation('hello', (0, 5))
+    B = Annotation('hell', (0, 4))
+    C = Annotation('world', (6, 11))
 
     annotations = AnnotationList([C, A])
     annotations.append(B)
@@ -38,9 +38,9 @@ def test_ordering():
 
 
 def test_disambiguate():
-    A1 = Annotation('hello', (0, 4), score=1.1)
-    A2 = Annotation('hell', (0, 3), score=1.0)
-    B = Annotation('world', (6, 10), score=1.1)
+    A1 = Annotation('hello', (0, 5), score=1.1)
+    A2 = Annotation('hell', (0, 4), score=1.0)
+    B = Annotation('world', (6, 11), score=1.1)
 
     annotations = AnnotationList([A1, A2, B])
 
@@ -52,11 +52,11 @@ def test_disambiguate():
 
 
 def test_cells():
-    A1 = Annotation('hello', (0, 4), type='Greeting')
-    A2 = Annotation('hell', (0, 3), type='Place')
-    B1 = Annotation('world!', (6, 11), type='Place')
-    B2 = Annotation('world', (6, 10), type='Place')
-    C = Annotation('!', (11, 11), type='Symbol')
+    A1 = Annotation('hello', (0, 5), type='Greeting')
+    A2 = Annotation('hell', (0, 4), type='Place')
+    B1 = Annotation('world!', (6, 12), type='Place')
+    B2 = Annotation('world', (6, 11), type='Place')
+    C = Annotation('!', (11, 12), type='Symbol')
 
     annotations = AnnotationList([A1, A2, B1, B2, C])
     assert annotations.cells == [
@@ -67,9 +67,9 @@ def test_cells():
 
 
 def test_filter_and_boost():
-    A1 = Annotation('hello', (0, 4), type='Greeting', score=1.0)
-    A2 = Annotation('hell', (0, 3), type='Place', score=1.0)
-    B = Annotation('world', (6, 10), type='Place', score=1.0)
+    A1 = Annotation('hello', (0, 5), type='Greeting', score=1.0)
+    A2 = Annotation('hell', (0, 4), type='Place', score=1.0)
+    B = Annotation('world', (6, 11), type='Place', score=1.0)
 
     annotations = AnnotationList([A1, A2, B])
 

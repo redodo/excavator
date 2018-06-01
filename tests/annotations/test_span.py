@@ -16,7 +16,7 @@ def test_attributes():
     span = Span(1, 2)
     assert span.start == 1
     assert span.end == 2
-    assert span.length == 2
+    assert span.length == 1
 
 
 def test_validation():
@@ -29,13 +29,32 @@ def test_validation():
 
 
 def test_contains():
-    assert Span(1, 3) in Span(3, 5)
-    assert Span(4, 4) in Span(1, 4)
+    assert Span(1, 3) in Span(2, 5)
+    assert Span(4, 4) in Span(1, 5)
     assert 3 in Span(1, 4)
     assert 0 not in Span(1, 3)
 
     assert [2, 5] in Span(1, 3)
     assert (2, 5) in Span(3, 5)
+
+    assert Span(2, 6) in Span(4, 6)
+    assert Span(4, 6) in Span(2, 6)
+    assert Span(2, 4) in Span(2, 6)
+    assert Span(2, 6) in Span(2, 4)
+
+    assert 5 not in Span(2, 5)
+    assert 4 in Span(2, 5)
+    assert 2 in Span(2, 5)
+
+    assert Span(4, 4) not in Span(2, 4)
+
+    assert Span(2, 4) in Span(3, 4)
+    assert Span(3, 4) in Span(2, 4)
+
+    assert Span(2, 4) not in Span(0, 2)
+    assert Span(0, 2) not in Span(2, 4)
+
+    assert Span(11, 13) in Span(11, 13)
 
 
 def test_lt():
@@ -73,8 +92,8 @@ def test_sub():
 
 
 def test_len():
-    assert len(Span(0, 5)) == 6
-    assert len(Span(0, 0)) == 1
+    assert len(Span(0, 5)) == 5
+    assert len(Span(0, 0)) == 0
 
 
 def test_json():

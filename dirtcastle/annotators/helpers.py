@@ -15,7 +15,10 @@ def build_annotator(base, type_name, patterns, case_sensitive=None):
     annotator_class = type(
         class_name,
         (base_class,),
-        {'patterns': patterns, 'case_sensitive': case_sensitive},
+        {
+            'patterns': patterns,
+            'case_sensitive': case_sensitive,
+        },
     )
 
     return annotator_class

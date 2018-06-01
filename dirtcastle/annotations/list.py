@@ -7,6 +7,7 @@ from .span import Span
 class AnnotationList(list):
     
     def __init__(self, iterable=()):
+        self._cells = None
         for annotation in iterable:
             self.append(annotation)
 
@@ -32,7 +33,7 @@ class AnnotationList(list):
 
     def collisions(self, position):
         if isinstance(position, Annotation):
-            position = position.span.end + 1
+            position = position.span.end
 
         collisions = set()
 
@@ -86,7 +87,9 @@ class AnnotationList(list):
                 best_score = score
 
         if discard_others:
-            for annotation in self:
+            # make a copy of self in order to prevent a bug where some
+            # items are not iterated when an item is removed
+            for annotation in list(self):
                 if annotation not in best_combination:
                     self.remove(annotation)
 
@@ -99,11 +102,11 @@ class AnnotationList(list):
         TODO: place annotations in cells on-the-go instead of complete
               recomputation on addition
         """
-        if not self._cells:
+        if self._cells is None:
             cells = [AnnotationList(self.collisions(0))]
 
             while len(cells[-1]) > 0:
-                next_position = 1 + min([
+                next_position = min([
                     annotation.span.end for annotation in cells[-1]
                 ])
                 cells.append(AnnotationList(self.collisions(next_position)))

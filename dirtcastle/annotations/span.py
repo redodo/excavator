@@ -49,7 +49,7 @@ class Span(tuple):
         return self.__len__()
 
     def __len__(self):
-        return self[END] - self[START] + 1
+        return self[END] - self[START]
 
     def __add__(self, other):
         return Span(
@@ -72,11 +72,14 @@ class Span(tuple):
     def __contains__(self, other):
         if self.__spanesque(other):
             return (
-                self[START] <= other[START] <= self[END] or
-                self[START] <= other[END] <= self[END]
+                self[START] <= other[START] < self[END] or
+                self[START] < other[END] < self[END]
+            ) or (
+                other[START] <= self[START] < other[END] or
+                other[START] < self[END] < other[END]
             )
 
-        return self[START] <= other <= self[END]
+        return self[START] <= other < self[END]
 
     def __lt__(self, other):
         if self.__spanesque(other):
@@ -85,7 +88,7 @@ class Span(tuple):
                 self[END] > other[END]
             )
 
-        return self[END] < other
+        return self[END] <= other
 
     def __le__(self, other):
         return self == other or self < other

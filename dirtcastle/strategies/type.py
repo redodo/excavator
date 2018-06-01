@@ -32,6 +32,9 @@ class NearbyTypeStrategy(CellStrategy):
 
     @functools.lru_cache(256)
     def _compute_boost(self, dx, dy):
+        if self.reach == 0:
+            return self.max_boost
+
         distance = math.sqrt(dx**2 + dy**2)
         factor = 1 - (distance - self.min_reach) / self.reach
         return self.min_boost + factor * self.boost

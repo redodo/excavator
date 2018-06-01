@@ -1,7 +1,6 @@
 import re
 
 from ..annotations.base import Annotation
-from .utils import find_all
 from .registry import registry
 
 
@@ -90,13 +89,17 @@ class RegexAnnotator(Annotator):
         del self._compiled_patterns
         _ = self.compiled_patterns
 
+    def prepare_pattern(self, pattern):
+        return pattern
+
     @property
     def compiled_patterns(self):
         if not hasattr(self, '_compiled_patterns'):
             self._compiled_patterns = {}
             flags = self.get_flags()
             for pattern in self.get_patterns():
-                regex = re.compile(pattern, flags=flags)
+                prepared_pattern = self.prepare_pattern(pattern)
+                regex = re.compile(prepared_pattern, flags=flags)
                 # regex leads to pattern, pattern leads to representation
                 self._compiled_patterns[regex] = pattern
                 yield (regex, pattern)
@@ -117,14 +120,10 @@ class RegexAnnotator(Annotator):
         abstract = True
 
 
-class TextAnnotator(Annotator):
+class TextAnnotator(RegexAnnotator):
 
-    def annotate(self, text):
-        case_sensitive = self.is_case_sensitive()
-        for pattern in self.get_patterns():
-            for found, span in find_all(pattern, text, case_sensitive):
-                data = self.get_representation(found, pattern)
-                yield self.create_annotation(text=found, span=span, data=data)
+    def prepare_pattern(self, pattern):
+        return r'\b%s\b' % re.escape(pattern)
 
     class Meta:
         abstract = True
