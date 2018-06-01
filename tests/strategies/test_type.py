@@ -1,4 +1,3 @@
-from dirtcastle.annotations.base import Annotation
 from dirtcastle.annotators.agent import Agent
 from dirtcastle.annotators.base import TextAnnotator
 from dirtcastle.strategies.type import NearbyTypeStrategy

@@ -46,7 +46,7 @@ class AnnotatedLine:
 
     JOIN_CHAR = ' '
 
-    def __init__(self, text, annotations=None):
+    def __init__(self, text='', annotations=None):
         self.text = text
 
         if isinstance(annotations, AnnotationList):
@@ -70,6 +70,10 @@ class AnnotatedLine:
         return self.text == other.text and self.annotations == other.annotations
 
     def __add__(self, other):
+        if other == 0:
+            # this statement allows AnnotatedLine to work with sum()
+            return self
+
         if not isinstance(other, AnnotatedLine):
             return NotImplemented
 
@@ -84,6 +88,9 @@ class AnnotatedLine:
 
         copy.text += other.text
         return copy
+    
+    def __radd__(self, other):
+        return self.__add__(other)
 
     def __repr__(self):
         return '<AnnotatedLine({text}, annotations={annotations})>'.format(
