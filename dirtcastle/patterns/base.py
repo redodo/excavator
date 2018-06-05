@@ -1,6 +1,7 @@
 from string import Formatter
 
 from ..regex import re
+
 from .segments import RawSegment, EscapeSegment
 
 

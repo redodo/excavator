@@ -1,6 +1,7 @@
 import functools
 
 from ..utils import JsonSerializer
+
 from .base import Annotation
 from .span import Span
 

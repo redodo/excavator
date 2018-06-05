@@ -1,4 +1,5 @@
-from ..annotations.text import AnnotatedLine
+from ..annotations import AnnotatedLine
+
 from .base import Strategy
 
 

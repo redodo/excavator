@@ -1,6 +1,7 @@
-import re
+from ..annotations import Annotation
+from ..patterns import RegexBuilder
+from ..regex import re
 
-from ..annotations.base import Annotation
 from .registry import registry
 
 

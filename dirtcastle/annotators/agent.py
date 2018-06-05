@@ -1,5 +1,4 @@
-from ..annotations.list import AnnotationList
-from ..annotations.text import AnnotatedText, AnnotatedLine
+from ..annotations import AnnotationList, AnnotatedText, AnnotatedLine
 from .registry import registry
 
 
