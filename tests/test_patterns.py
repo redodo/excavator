@@ -11,7 +11,7 @@ def test_builder():
         'sep': '/{comma}{?} /',
     }
     patterns = [
-        '{greetings}{sep}{object}{??}{?}'
+        '{greetings}{sep}{object}{??}{?}',
     ]
 
     builder = RegexBuilder(tokens, patterns)
@@ -23,4 +23,3 @@ def test_builder():
     assert not regex.match('hello,? world')
     assert regex.match('hi world?')
     assert regex.match('hello, world?')
-    assert not regex.match('hello, there?')
