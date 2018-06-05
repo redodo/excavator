@@ -1,3 +1,6 @@
+from ..utils import JsonSerializer
+
+
 # The start and end indices for compatibility with regular lists and tuples
 START = 0
 END = 1
@@ -105,7 +108,7 @@ class Span(tuple):
         return self == other or self > other
 
     def __bool__(self):
-        return None not in self
+        return self[START] != None and self[END] != None
 
     def __repr__(self):
         return '<Span({start}, {end})>'.format(

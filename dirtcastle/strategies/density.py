@@ -15,7 +15,11 @@ class IncreaseDensityStrategy(Strategy):
 
     def apply(self, text):
         for _ in range(self.tries):
-            density = self.compute_density(text)
+            try:
+                density = self.compute_density(text)
+            except ZeroDivisionError:
+                # annotated text is empty
+                break
             if density < self.threshold:
                 self.fold_lines(text)
 

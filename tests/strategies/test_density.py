@@ -5,10 +5,7 @@ from dirtcastle.strategies.density import IncreaseDensityStrategy
 
 def test_increase_density():
     agent = Agent()
-
-    agent.add_strategy(
-        IncreaseDensityStrategy(10)
-    )
+    agent.add_strategy(IncreaseDensityStrategy(10))
 
     class GreetingAnnotator(TextAnnotator):
         patterns = ('hello', 'hi', 'greetings')
@@ -28,3 +25,10 @@ def test_increase_density():
     assert annotated_text.lines[0].text == ''
     assert annotated_text.lines[1].text == 'hello hi hello'
     assert annotated_text.lines[2].text == 'hello greetings greetings'
+
+
+def test_empty():
+    agent = Agent()
+    agent.add_strategy(IncreaseDensityStrategy(10))
+
+    annotated_text = agent.annotate('')
