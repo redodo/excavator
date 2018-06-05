@@ -50,7 +50,7 @@ class AnnotatedText(JsonSerializer):
     @classmethod
     def from_dict(cls, d):
         return cls(
-            lines=d.get('lines', None),
+            lines=[AnnotatedLine.from_dict(i) for i in d.get('lines', [])],
         )
 
 
@@ -123,5 +123,5 @@ class AnnotatedLine(JsonSerializer):
     def from_dict(cls, d):
         return cls(
             text=d.get('text', None),
-            annotations=AnnotationList(d.get('annotations', None)),
+            annotations=AnnotationList.from_dict(d.get('annotations', None)),
         )
