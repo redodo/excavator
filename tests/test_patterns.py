@@ -1,25 +1,24 @@
-from dirtcastle.patterns.builder import RegexBuilder
+from dirtcastle.patterns.builder import PatternBuilder
 
 
 def test_builder():
-    tokens = {
+    raw_tokens = {
         'greetings': '/(hello|hi)/',
         'object': '/(world|there)/',
         '??': '?',
         '?': '/?/',
         'comma': ',',
-        'sep': '/{comma}{?} /',
+        'dot': '.',
+        'sep': '/({comma}|{dot}){?} /',
     }
-    patterns = [
-        '{greetings}{sep}{object}{??}{?}',
-    ]
+    raw_pattern = '{greetings}{sep}{object}{??}{?}'
 
-    builder = RegexBuilder(tokens, patterns)
-    regexes = builder.compile_all()
-    regex = regexes[0]
+    builder = PatternBuilder(raw_tokens)
+    pattern = builder.compile(raw_pattern)
 
-    assert regex.match('hello world')
-    assert regex.match('hi, there')
-    assert not regex.match('hello,? world')
-    assert regex.match('hi world?')
-    assert regex.match('hello, world?')
+    assert pattern.match('hello world')
+    assert pattern.match('hi, there')
+    assert not pattern.match('hello,? world')
+    assert pattern.match('hi world?')
+    assert pattern.match('hello, world?')
+    assert pattern.match('hi. world')

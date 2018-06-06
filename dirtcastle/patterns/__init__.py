@@ -1,2 +1,2 @@
 from .base import Pattern
-from .builder import RegexBuilder
+from .builder import PatternBuilder

@@ -51,7 +51,7 @@ def test_regex_case_sensitivity():
     text = 'HELLO Bello cello'
 
     class ThingAnnotator(RegexAnnotator):
-        patterns = (r'[hbc]ello',)
+        patterns = ('/[hbc]ello/',)
 
     annotator = ThingAnnotator()
     annotations = list(annotator.annotate(text))

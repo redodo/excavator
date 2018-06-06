@@ -1,0 +1,2 @@
+- unify the regex/pattern/string/text structure into a single
+  pattern type based on the new token system

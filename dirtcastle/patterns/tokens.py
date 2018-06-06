@@ -6,7 +6,7 @@ class TokenSegment(PatternSegment):
     def get_value(self):
         if not hasattr(self, '_value') or self._value is None:
             pattern = Pattern(tokens=self.tokens, pattern=self.value)
-            self._value = pattern.get_value()
+            self._value = pattern.regex
         return self._value
 
 

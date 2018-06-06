@@ -5,41 +5,54 @@ from ..regex import re
 from .segments import RawSegment, EscapeSegment
 
 
+REGEX_PADDING = '/'
+REGEX_PADDING_LEN = len(REGEX_PADDING)
+
+
+def is_regex(s):
+    return (
+        s.startswith(REGEX_PADDING) and
+        s.endswith(REGEX_PADDING) and
+        len(s) >= REGEX_PADDING_LEN * 2
+    )
+
+
+def unpad_regex(r):
+    return r[REGEX_PADDING_LEN:-REGEX_PADDING_LEN]
+
+
 class Pattern:
+
     def __init__(self, tokens, pattern):
         self.tokens = tokens
         self.pattern = pattern
-        self.segments = []
-        self.build()
 
-    def build(self):
+        # Build the regular expression
+        segments = []
+
         # check if the pattern should be escaped
-        if self.is_regex():
+        segment_class = EscapeSegment
+        if is_regex(pattern):
             segment_class = RawSegment
-            pattern = self.pattern[1:-1]
-        else:
-            segment_class = EscapeSegment
-            pattern = self.pattern
+            pattern = unpad_regex(pattern)
 
         # build the segments
         for text, token, _, _ in Formatter().parse(pattern):
             if text:
-                self.segments.append(segment_class(self.tokens, text))
+                segments.append(segment_class(self.tokens, text))
             if token:
-                self.segments.append(self.tokens[token])
+                segments.append(self.tokens[token])
 
-    def is_regex(self):
-        return (
-            self.pattern.startswith('/') and
-            self.pattern.endswith('/') and
-            len(self.pattern) > 1
+        self.regex = ''.join([s.get_value() for s in segments])
+
+    def compile(self, **options):
+        return re.compile(self.regex, **options)
+
+    def __repr__(self):
+        return '<Pattern(%s -> %s)>' % (
+            repr(self.pattern),
+            repr(self.regex),
         )
 
-    def get_value(self):
-        return ''.join([segment.get_value() for segment in self.segments])
-
-    def compile(self):
-        return re.compile(self.get_value())
-
     def __str__(self):
-        return self.get_value()
+        return self.__repr__()

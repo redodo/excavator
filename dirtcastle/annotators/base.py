@@ -1,5 +1,5 @@
 from ..annotations import Annotation
-from ..patterns import RegexBuilder
+from ..patterns import PatternBuilder
 from ..regex import re
 
 from .registry import registry
@@ -31,6 +31,7 @@ class AnnotatorBase(type):
 
 class Annotator(metaclass=AnnotatorBase):
 
+    tokens = {}
     patterns = ()
 
     case_sensitive = False
@@ -61,8 +62,14 @@ class Annotator(metaclass=AnnotatorBase):
         annotation_class = self.get_annotation_class()
         return annotation_class(**kwargs)
 
+    def get_tokens(self):
+        return self.tokens
+
     def get_patterns(self):
         return self.patterns
+
+    def get_pattern_builder(self):
+        return PatternBuilder(tokens=self.get_tokens())
 
     def get_representation(self, pattern, match):
         patterns = self.get_patterns()
@@ -96,14 +103,16 @@ class RegexAnnotator(Annotator):
     @property
     def compiled_patterns(self):
         if not hasattr(self, '_compiled_patterns'):
+            pattern_builder = self.get_pattern_builder()
             self._compiled_patterns = {}
             flags = self.get_flags()
-            for pattern in self.get_patterns():
-                prepared_pattern = self.prepare_pattern(pattern)
+            for raw_pattern in self.get_patterns():
+                pattern = pattern_builder.build(raw_pattern)
+                prepared_pattern = self.prepare_pattern(pattern.regex)
                 regex = re.compile(prepared_pattern, flags=flags)
                 # regex leads to pattern, pattern leads to representation
-                self._compiled_patterns[regex] = pattern
-                yield (regex, pattern)
+                self._compiled_patterns[regex] = raw_pattern
+                yield (regex, raw_pattern)
         else:
             yield from self._compiled_patterns.items()
 

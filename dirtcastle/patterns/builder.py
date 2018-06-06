@@ -2,14 +2,14 @@ from .base import Pattern
 from .tokens import LazyTokenSegmentDict
 
 
-class RegexBuilder:
+class PatternBuilder:
 
-    def __init__(self, tokens, patterns):
+    def __init__(self, tokens):
         self.tokens = LazyTokenSegmentDict(tokens)
-        self.patterns = patterns
 
-    def compile_all(self):
-        compiled = []
-        for pattern in self.patterns:
-            compiled.append(Pattern(self.tokens, pattern).compile())
-        return compiled
+    def build(self, s):
+        return Pattern(self.tokens, s)
+
+    def compile(self, s, **options):
+        pattern = Pattern(self.tokens, s)
+        return pattern.compile(**options)
