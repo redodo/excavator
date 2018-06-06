@@ -102,3 +102,52 @@ def test_regex_recompile():
         Annotation('hello', (0, 5), type='Thing'),
         Annotation('world', (6, 11), type='Thing'),
     ]
+
+
+def test_tokens():
+    text = 'hello, world!'
+
+    class ThingAnnotator(RegexAnnotator):
+        tokens = {
+            'comma': ',',
+            'dot': '.',
+            'sep': '/({comma}|{dot})? /',
+        }
+        patterns = ('hello{sep}world!',)
+
+    annotator = ThingAnnotator()
+    annotations = list(annotator.annotate(text))
+
+    assert annotations == [
+        Annotation('hello, world!', (0, 13), type='Thing'),
+    ]
+
+
+def test_complex_tokens():
+    text = '''
+    40ft
+    40'ft
+    40"ft
+    20ft
+    20 feet
+    20'feet
+    '''
+
+    class ContainerAnnotator(RegexAnnotator):
+        tokens = {
+            '"': '"',
+            "'": "'",
+            'feet_symbol': '/({"}|{\'})/',
+            'feet_text': '/f(ee)?t/',
+            'sep': '/ ?/',
+            'feet': '/{sep}{feet_symbol}?{sep}{feet_text}/',
+        }
+        patterns = (
+            '40{feet}',
+            '20{feet}',
+        )
+
+    annotator = ContainerAnnotator()
+    annotations = list(annotator.annotate(text))
+
+    assert len(annotations) == 6

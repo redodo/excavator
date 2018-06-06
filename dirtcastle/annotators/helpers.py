@@ -8,7 +8,7 @@ base_annotators = {
 }
 
 
-def build_annotator(base, type_name, patterns, case_sensitive=None):
+def build_annotator(base, type_name, tokens, patterns, case_sensitive=None):
     base_class = base_annotators[base]
     class_name = '%sAnnotator' % type_name
 
@@ -16,6 +16,7 @@ def build_annotator(base, type_name, patterns, case_sensitive=None):
         class_name,
         (base_class,),
         {
+            'tokens': tokens,
             'patterns': patterns,
             'case_sensitive': case_sensitive,
         },

@@ -12,7 +12,8 @@ def test_build_annotator():
     annotator_class = build_annotator(
         base='text',
         type_name='Hello',
-        patterns=['hello'],
+        tokens={'x': 'hello'},
+        patterns=['{x}'],
     )
     assert annotator_class in registry
     annotator = annotator_class()
@@ -30,7 +31,8 @@ def test_build_annotator_from_dict():
     {
         "base": "text",
         "type": "World",
-        "patterns": ["world"]
+        "tokens": {"x": "world"},
+        "patterns": ["{x}"]
     }
     '''
     annotator_data = json.loads(raw_json)
