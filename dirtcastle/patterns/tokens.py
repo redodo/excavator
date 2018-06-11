@@ -1,12 +1,11 @@
-from .base import Pattern
-from .segments import PatternSegment
+from .base import resolve_pattern
+from .segments import RawSegment
 
 
-class TokenSegment(PatternSegment):
+class TokenSegment(RawSegment):
     def get_value(self):
         if not hasattr(self, '_value') or self._value is None:
-            pattern = Pattern(tokens=self.tokens, pattern=self.value)
-            self._value = pattern.regex
+            self._value = resolve_pattern(tokens=self.tokens, pattern=self.value)
         return self._value
 
 

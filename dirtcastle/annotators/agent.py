@@ -1,25 +1,28 @@
 from ..annotations import AnnotationList, AnnotatedText, AnnotatedLine
-from .registry import registry
+
+from .base import Annotator
 
 
 class Agent:
 
-    annotator_classes = registry
-
     def __init__(self):
-        self._strategies = list()
-
-    def get_annotators(self):
-        for annotator_class in self.annotator_classes:
-            yield annotator_class()
+        self.strategies = list()
+        self.annotators = list()
 
     def add_strategy(self, strategy, order=None):
         if isinstance(strategy, type):
             strategy = strategy()
         if order is None:
-            self._strategies.append(strategy)
+            self.strategies.append(strategy)
         else:
-            self._strategies.insert(order, strategy)
+            self.strategies.insert(order, strategy)
+
+    def add_annotator(self, annotator):
+        self.annotators.append(annotator)
+
+    def create_annotator(self, *args, **kwargs):
+        annotator = Annotator(*args, **kwargs)
+        self.annotators.append(annotator)
 
     def annotate(self, text, strip=True):
         annotated_text = AnnotatedText()
@@ -33,14 +36,11 @@ class Agent:
             for annotation in self._annotate_all(annotated_line.text):
                 annotated_line.annotations.append(annotation)
 
-        for strategy in self._strategies:
+        for strategy in self.strategies:
             strategy.apply(annotated_text)
 
         return annotated_text
 
     def _annotate_all(self, text):
-        for annotator in self.get_annotators():
+        for annotator in self.annotators:
             yield from annotator.annotate(text)
-
-
-default_agent = Agent()

@@ -1,11 +1,10 @@
 from dirtcastle.annotators.agent import Agent
-from dirtcastle.annotators.base import TextAnnotator
+from dirtcastle.annotators.base import Annotator
 from dirtcastle.strategies.type import NearbyTypeStrategy
 
 
 def test_nearby_type():
     agent = Agent()
-
     agent.add_strategy(
         NearbyTypeStrategy(
             # similar types in cells directly above or below get
@@ -16,12 +15,14 @@ def test_nearby_type():
             h_reach=0,
         )
     )
-
-    class TimeAnnotator(TextAnnotator):
-        patterns = [str(h) for h in range(1, 25)]
-
-    class ContainerAnnotator(TextAnnotator):
-        patterns = ('20', '40ft')
+    agent.create_annotator(
+        'Time',
+        patterns=[str(h) for h in range(1, 25)],
+    )
+    agent.create_annotator(
+        'Container',
+        patterns=('20', '40ft'),
+    )
 
     text = '''
     container  hour

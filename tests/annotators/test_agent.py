@@ -1,7 +1,6 @@
 from dirtcastle.annotations.base import Annotation
 from dirtcastle.annotators.agent import Agent
-from dirtcastle.annotators.base import TextAnnotator
-from dirtcastle.annotators.helpers import annotate
+from dirtcastle.annotators.base import Annotator
 
 
 def test_agent():
@@ -10,10 +9,13 @@ def test_agent():
         world
     '''
 
-    class HelloWorldAnnotator(TextAnnotator):
-        patterns = ('hello', 'world')
-
     agent = Agent()
+    agent.add_annotator(
+        Annotator(
+            'HelloWorld',
+            patterns=('hello', 'world'),
+        )
+    )
     annotated_text = agent.annotate(text)
 
     assert len(annotated_text.lines) == 4
@@ -23,17 +25,16 @@ def test_agent():
         Annotation('world', (0, 5), type='HelloWorld')
 
 
-def test_annotate_helper():
-    text = '''
-        hello
-        world
-    '''
-
-    class HelloWorldAnnotator(TextAnnotator):
-        patterns = ('hello', 'world')
+def test_agent_create_annotator():
+    text = 'hello world'
 
     agent = Agent()
-    a = agent.annotate(text)
-    b = annotate(text)
+    agent.create_annotator(
+        'Hello',
+        patterns='hello',
+    )
+    annotated_text = agent.annotate(text)
 
-    assert a == b
+    assert annotated_text.lines[0].annotations == [
+        Annotation('hello', (0, 5), type='Hello'),
+    ]

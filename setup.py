@@ -1,8 +1,18 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
     name='dirtcastle',
     version='0.1.0',
-    packages=['dirtcastle'],
+    packages=find_packages(),
+    install_requires=[
+        'apistar',
+        'click',
+        'pymongo',
+        'regex',
+    ],
+    entry_points='''
+        [console_scripts]
+        dirtcastle=dirtcastle.api.cli:cli
+    '''
 )

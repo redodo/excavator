@@ -1,2 +1,2 @@
-from .base import Pattern
+from .base import resolve_pattern
 from .builder import PatternBuilder

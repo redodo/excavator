@@ -1,64 +1,142 @@
+import warnings
+
 from ..annotations import Annotation
 from ..patterns import PatternBuilder
 from ..regex import re
-
-from .registry import registry
-
-
-class AnnotatorBase(type):
-
-    def __new__(cls, name, bases, attrs, **kwargs):
-        class Meta:
-            """The default meta-class for annotators"""
-
-        meta = attrs.pop('Meta', Meta)
-
-        # determine the type name
-        default_type = name.replace('Annotator', '')
-        meta.type = getattr(meta, 'type', default_type)
-
-        # create the class
-        attrs['_meta'] = meta
-        new_class = super().__new__(cls, name, bases, attrs, **kwargs)
-
-        # add the annotator to the registry when it is not abstract
-        abstract = getattr(meta, 'abstract', False)
-        if not abstract:
-            registry.add(new_class)
-
-        return new_class
+from ..utils import kwargs_notation
 
 
-class Annotator(metaclass=AnnotatorBase):
+def transform_patterns(patterns):
+    """TODO: move this somewhere else?
 
-    tokens = {}
-    patterns = ()
+    Transforms patterns into a pattern+representation dict
+    """
 
-    case_sensitive = False
+    if isinstance(patterns, str):
+        return {(patterns,): None}
 
-    annotation_class = Annotation
+    if isinstance(patterns, (list, tuple)):
+        return {tuple(patterns): None}
+
+    if isinstance(patterns, dict):
+        new_patterns = {}
+        for key, value in patterns.items():
+            if isinstance(key, (list, tuple)):
+                new_patterns[tuple(key)] = value
+            else:
+                new_patterns[(key,)] = value
+        return new_patterns
+
+    raise ValueError('patterns are formatted incorrectly')
+
+
+class Annotator:
+    """The annotator class.
+
+    :param name: The name of the annotator.  This value is used to
+        associate a type with annotations.
+    :param tokens: Named tokens that are substituted in the patterns.
+        TODO: allow global tokens to be defined and used
+    :param patterns: Regex or plaintext patterns to match and create
+        annotations from.
+    :param case_sensitive: Whether the annotator cares about case.
+    :param annotation_class: The class used to instatiate annotations.
+    """
+
+    #: The default class used to instantiate annotations.
+    default_annotation_class = Annotation
+
+    #: The default settings
+    default_settings = {
+        'case_sensitive': False,
+        'word_boundary': True,
+    }
+
+    WORD_BOUNDARY_START = r'(?:^|\b)'
+    WORD_BOUNDARY_END = r'(?:\b|$)'
+
+    def __init__(self, name, tokens=None, patterns=None, settings=None,
+                 transform=None, annotation_class=default_annotation_class):
+
+        self.name = name
+        self.tokens = tokens or {}
+
+        self.patterns = transform_patterns(patterns)
+
+        self.settings = self.default_settings.copy()
+        self.settings.update(settings or {})
+
+        self.transform = transform
+        self.annotation_class = annotation_class
 
     def annotate(self, text):
-        """
-        Annotates the given text.
+        pattern_builder = self.get_pattern_builder()
+        for patterns, representation in self.patterns.items():
+            for pattern in patterns:
 
-        :param text: the string to annotate
-            .. note:: This is not an instance of :class:`AnnotatedText`
-        :param return: a generator with :class:`Annotation` objects
-        """
-        raise NotImplementedError(
-            '%s does not implement an `annotate` method'
-            % self.__class__.__name
-        )
+                built_pattern = pattern_builder.build(pattern)
+                built_pattern = self.prepare_pattern(built_pattern)
 
-    def get_type(self):
-        return self._meta.type
+                regex = re.compile(built_pattern, flags=self.get_flags())
+
+                for match in regex.finditer(text):
+
+                    # By default, the representation is used as the
+                    # extra data assigned to the annotation.
+                    data = representation
+
+                    # When a transform callback is given, the named
+                    # groups will be passed to this method, and the
+                    # result will be used as the extra annotation data.
+                    if self.transform is not None:
+                        try:
+                            data = self.transform(**match.groupdict())
+                        except Exception as e:
+                            # emit a warning without stopping program
+                            # execution
+                            warnings.warn((
+                                'The transform method of annotator {} raised '
+                                'an exception when given {} as input:\n'
+                                '    {}: {}'
+                            ).format(
+                                repr(self.get_name()),
+                                kwargs_notation(match.groupdict()),
+                                e.__class__.__name__,
+                                e,
+                            ))
+
+                    yield self.create_annotation(
+                        text=match.group(0),
+                        span=match.span(),
+                        data=data,
+                    )
+
+    def prepare_pattern(self, pattern):
+        if self.settings['word_boundary']:
+            pattern = r'%s%s%s' % (
+                self.WORD_BOUNDARY_START,
+                pattern,
+                self.WORD_BOUNDARY_END,
+            )
+        return pattern
+
+    def get_name(self):
+        return self.name
+
+    def is_case_sensitive(self):
+        return self.case_sensitive
+
+    def get_flags(self):
+        flags = 0
+        if not self.settings['case_sensitive']:
+            flags |= re.IGNORECASE
+        return flags
 
     def get_annotation_class(self):
         return self.annotation_class
 
     def create_annotation(self, **kwargs):
-        kwargs.update(type=self.get_type())
+        kwargs.update(type=self.get_name())
         annotation_class = self.get_annotation_class()
         return annotation_class(**kwargs)
 
@@ -70,70 +148,3 @@ class Annotator(metaclass=AnnotatorBase):
 
     def get_pattern_builder(self):
         return PatternBuilder(tokens=self.get_tokens())
-
-    def get_representation(self, pattern, match):
-        patterns = self.get_patterns()
-        try:
-            return patterns[pattern]
-        except (KeyError, TypeError):
-            return None
-
-    def is_case_sensitive(self):
-        return self.case_sensitive
-
-    class Meta:
-        abstract = True
-
-
-class RegexAnnotator(Annotator):
-
-    def get_flags(self):
-        flags = 0
-        if not self.is_case_sensitive():
-            flags |= re.IGNORECASE
-        return flags
-
-    def recompile_patterns(self):
-        del self._compiled_patterns
-        _ = self.compiled_patterns
-
-    def prepare_pattern(self, pattern):
-        return pattern
-
-    @property
-    def compiled_patterns(self):
-        if not hasattr(self, '_compiled_patterns'):
-            pattern_builder = self.get_pattern_builder()
-            self._compiled_patterns = {}
-            flags = self.get_flags()
-            for raw_pattern in self.get_patterns():
-                pattern = pattern_builder.build(raw_pattern)
-                prepared_pattern = self.prepare_pattern(pattern.regex)
-                regex = re.compile(prepared_pattern, flags=flags)
-                # regex leads to pattern, pattern leads to representation
-                self._compiled_patterns[regex] = raw_pattern
-                yield (regex, raw_pattern)
-        else:
-            yield from self._compiled_patterns.items()
-
-    def annotate(self, text):
-        for regex, pattern in self.compiled_patterns:
-            for match in regex.finditer(text):
-                data = self.get_representation(pattern, match)
-                yield self.create_annotation(
-                    text=match.group(0),
-                    span=match.span(),
-                    data=data,
-                )
-
-    class Meta:
-        abstract = True
-
-
-class TextAnnotator(RegexAnnotator):
-
-    def prepare_pattern(self, pattern):
-        return r'\b%s\b' % re.escape(pattern)
-
-    class Meta:
-        abstract = True
