@@ -2,10 +2,11 @@ import typing
 
 import click
 import pymongo
-from apistar import App, Route, types, validators, http
+from apistar import App, Route, types, validators, http, Include
 from apistar.server.components import Component
 
 from .database import db
+from .endpoints import global_tokens
 
 
 def response(value):
@@ -77,13 +78,11 @@ def delete_global_token(name: str):
 
 
 routes = [
-    Route('/tokens', method='GET', handler=get_global_tokens),
-    Route('/tokens', method='PATCH', handler=set_global_tokens),
-    Route('/tokens/{name}', method='DELETE', handler=delete_global_token),
     Route('/annotators', method='GET', handler=list_annotators),
     Route('/annotators', method='POST', handler=create_annotator),
     Route('/annotators/{name}', method='GET', handler=get_annotator),
     Route('/annotators/{name}', method='PATCH', handler=update_annotator),
     Route('/annotators/{name}', method='DELETE', handler=delete_annotator),
+    Include('/tokens', name='global_tokens', routes=global_tokens.routes),
 ]
 app = App(routes=routes)
