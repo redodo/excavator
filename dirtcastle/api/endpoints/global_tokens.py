@@ -1,57 +1,68 @@
-from apistar import http, Route
+from apistar import http, Route, types, validators
 
 from ..database import db
+from ..response import ResponseBuilder
 
 
-def list_global_tokens() -> dict:
-    pass
+class Token(types.Type):
+    name = validators.String(min_length=1)
+    value = validators.String(min_length=1)
 
 
-class ResponseBuilder:
-
-    def __init__(self, *, init_error=False, init_results=False):
-        self.response = {}
-        
-        if init_error:
-            self.response['error'] = None
-            self.response['results'] = list()
-
-    def set_message(self, message):
-        self.response['message'] = message
-
-    def add_result(self, result):
-        if 'results' not in self.response:
-            self.response['results'] = list()
-        self.response['results'].append(result)
-
-    def get_response(self):
-        return self.response
+def list_global_tokens(r: ResponseBuilder) -> dict:
+    r.set_results({
+        token['name']: token['value']
+        for token in db.global_tokens.find()
+    })
+    return r.get_response()
 
 
-def update_global_tokens(tokens: http.RequestData) -> dict:
-    response_builder = ResponseBuilder(init_error=True, init_results=True)
-
+def update_global_tokens(tokens: http.RequestData, r: ResponseBuilder) -> dict:
+    """Updates multiple global tokens."""
     if not tokens:
-        response_builder.set_message('Nothing to update.')
-        return response_builder.get_response()
+        r.set_message('Nothing to update.')
+        return r.get_response()
 
     for name, value in tokens.items():
         db.global_tokens.update_one(
             {'name': name},
             {'$set': {'value': value}},
+            upsert=True,
         )
-        response_builder.add_result({'name': name, 'value': value})
+        r.add_result({'name': name, 'value': value})
 
-    response_builder.set_message('Patch applied with success.')
-    return response_builder.get_response()
+    r.set_message('Patch applied with success.')
+    return r.get_response()
+
+
+def replace_global_tokens(tokens: http.RequestData, r: ResponseBuilder) -> dict:
+    """Replaces the set of global tokens with the given set."""
+    if not tokens:
+        r.set_error('No tokens provided. Deletion of tokens prevented')
+        return r.get_response()
+
+    db.global_tokens.delete_many({})
+    for name, value in tokens.items():
+        db.global_tokens.insert_one({'name': name, 'value': value})
+
+    r.set_results(tokens)
+    return r.get_response()
 
 
 def delete_global_tokens(tokens: http.RequestData):
-    print(tokens)
+    """TODO: Deletes all the given global tokens."""
+
+
+def delete_global_token(name: str, r: ResponseBuilder):
+    """Deletes a single global token."""
+    db.global_tokens.delete_one({'name': name})
+    return r.get_response()
 
 
 routes = [
     Route('/', method='GET', handler=list_global_tokens),
+    Route('/', method='POST', handler=replace_global_tokens),
     Route('/', method='PATCH', handler=update_global_tokens),
     Route('/', method='DELETE', handler=delete_global_tokens),
+    Route('/{name}', method='DELETE', handler=delete_global_token),
 ]

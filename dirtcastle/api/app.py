@@ -7,6 +7,7 @@ from apistar.server.components import Component
 
 from .database import db
 from .endpoints import global_tokens
+from .response import ResponseBuilderComponent
 
 
 def response(value):
@@ -19,8 +20,7 @@ def response(value):
 
     raise NotImplementedError(
         'a response could not be created for type %s'
-        % type(value)
-    )
+        % type(value))
 
 
 class Annotator(types.Type):
@@ -76,6 +76,7 @@ def delete_global_token(name: str):
     print(result)
 
 
+from .endpoints import annotators
 
 routes = [
     Route('/annotators', method='GET', handler=list_annotators),
@@ -83,6 +84,11 @@ routes = [
     Route('/annotators/{name}', method='GET', handler=get_annotator),
     Route('/annotators/{name}', method='PATCH', handler=update_annotator),
     Route('/annotators/{name}', method='DELETE', handler=delete_annotator),
+    Include('/test', name='annotators', routes=annotators.routes),
     Include('/tokens', name='global_tokens', routes=global_tokens.routes),
 ]
-app = App(routes=routes)
+components = [
+    ResponseBuilderComponent(init_error=True, init_results=True),
+]
+
+app = App(routes=routes, components=components)

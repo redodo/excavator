@@ -10,6 +10,7 @@ setup(
         'click',
         'pymongo',
         'regex',
+        'falcon',
     ],
     entry_points='''
         [console_scripts]
