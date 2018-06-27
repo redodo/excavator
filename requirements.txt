@@ -3,3 +3,4 @@ click
 pymongo
 regex
 falcon
+werkzeug
