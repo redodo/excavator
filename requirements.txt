@@ -1,5 +1,5 @@
-click
-pymongo
 regex
-falcon
-werkzeug
+django
+djangorestframework
+psycopg2-binary
+drf-nested-routers

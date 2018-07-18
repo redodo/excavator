@@ -2,23 +2,25 @@ version: "3"
 
 services:
 
-    mongo:
-        image: mongo
+    db:
+        image: postgres
         restart: always
         volumes:
-            - mongo-data:/data/db
+            - db-data:/var/lib/postgresql/data
 
     api:
         build: .
+        entrypoint: python manage.py
+        command: runserver 0.0.0.0:8000
         restart: always
-        environment:
-            MONGO_HOST: mongo
         volumes:
-            - .:/api
+            - .:/app
+        environment:
+            - DEBUG=true
         depends_on:
-            - mongo
+            - db
         ports:
             - "8000:8000"
 
 volumes:
-    mongo-data:
+    db-data:
