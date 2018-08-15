@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 
 from . import views
+from .constants import IGNORED_FIELD
 
 
 router = ExtendedDefaultRouter()

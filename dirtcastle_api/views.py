@@ -4,10 +4,13 @@ from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from . import serializers
+from .constants import IGNORED_FIELD
 from .models import Token, Pattern, Annotator, Document
 
 
 class WriteableNestedViewSetMixin(NestedViewSetMixin):
+    excluded_fields = []
+
     def initial(self, request, *args, **kwargs):
         # Before every request to this nested viewset we
         # want to resolve all the parent lookup kwargs into
@@ -20,12 +23,10 @@ class WriteableNestedViewSetMixin(NestedViewSetMixin):
         # perform_update handlers to avoid accessing the DB
         # twice.
         self.resolved_parents = self.resolve_parent_lookup_fields()
-        print('Resolved parents:', self.resolved_parents)
         return super().initial(request, *args, **kwargs)
 
     def get_queryset(self):
-        print('Queryset:', super().get_queryset())
-        return super().get_queryset().filter(**self.get_parent_lookup_fields())
+        return self.model.objects.filter(**self.get_parent_lookup_fields())
 
     def perform_create(self, serializer):
         serializer.save(**self.resolved_parents)
@@ -45,6 +46,8 @@ class WriteableNestedViewSetMixin(NestedViewSetMixin):
             # with only the modified parent lookup fields
             if key.startswith('parent_lookup_'):
                 parent_field = key.replace('parent_lookup_', '', 1)
+                if parent_field in self.excluded_fields:
+                    continue
                 lookup_fields[parent_field] = value
         return lookup_fields
 
@@ -91,6 +94,7 @@ class DocumentViewSet(WriteableNestedViewSetMixin, viewsets.ModelViewSet):
 
 
 class PatternViewSet(WriteableNestedViewSetMixin, viewsets.ModelViewSet):
+    excluded_fields = ['annotators__pk']
     model = Pattern
     queryset = Pattern.objects.all()
     serializer_class = serializers.PatternSerializer
