@@ -13,7 +13,7 @@ class Pattern(models.Model):
 
 class Annotator(models.Model):
     name = models.CharField(primary_key=True, max_length=32)
-    patterns = models.ManyToManyField(Pattern, related_name='+', blank=True)
+    patterns = models.ManyToManyField(Pattern, related_name='annotators', blank=True)
 
 
 class Document(models.Model):
@@ -24,4 +24,4 @@ class Document(models.Model):
         blank=True,
     )
     data = JSONField(blank=True, null=True)
-    patterns = models.ManyToManyField(Pattern, related_name='+', blank=True)
+    patterns = models.ManyToManyField(Pattern, related_name='documents', blank=True)

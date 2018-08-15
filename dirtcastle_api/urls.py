@@ -1,26 +1,38 @@
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_nested import routers
+from rest_framework_extensions.routers import ExtendedDefaultRouter
 
 from . import views
 
 
-router = routers.SimpleRouter()
-router.register(r'tokens', views.TokenViewSet)
-router.register(r'annotators', views.AnnotatorViewSet)
+router = ExtendedDefaultRouter()
 
-annotators_router = routers.NestedSimpleRouter(router, r'annotators', lookup='annotator')
-annotators_router.register(r'patterns', views.AnnotatorPatternViewSet, base_name='annotator-patterns')
-annotators_router.register(r'documents', views.AnnotatorDocumentViewSet, base_name='annotator-documents')
+router.register(r'tokens', views.TokenViewSet, base_name='token')
 
+annotator_router = router.register(r'annotators', views.AnnotatorViewSet, base_name='annotator')
 
-annotator_documents_router = routers.NestedSimpleRouter(annotators_router, r'documents', lookup='document')
-annotator_documents_router.register(r'patterns', views.AnnotatorDocumentPatternViewSet, base_name='annotator-document-patterns')
+annotator_document_router = annotator_router.register(
+    r'documents',
+    views.DocumentViewSet,
+    base_name='annotators-document',
+    parents_query_lookups=['annotator__pk'],
+)
+annotator_document_router.register(
+    r'patterns',
+    views.PatternViewSet,
+    base_name='annotators-documents-pattern',
+    parents_query_lookups=['annotators__pk', 'documents__pk'],
+)
+
+annotator_router.register(
+    r'patterns',
+    views.PatternViewSet,
+    base_name='annotators-pattern',
+    parents_query_lookups=['annotators__pk'],
+)
 
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('', include(annotators_router.urls)),
-    path('', include(annotator_documents_router.urls)),
     path('admin/', admin.site.urls),
 ]

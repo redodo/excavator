@@ -1,27 +1,27 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 
-from . import models
+from .models import Token, Annotator, Pattern, Document
 
 
-class TokenSerializer(serializers.HyperlinkedModelSerializer):
+class TokenSerializer(ModelSerializer):
     class Meta:
-        model = models.Token
-        fields = ('name', 'pattern', 'url')
+        model = Token
+        fields = ('name', 'pattern')
 
 
-class AnnotatorSerializer(serializers.HyperlinkedModelSerializer):
+class AnnotatorSerializer(ModelSerializer):
     class Meta:
-        model = models.Annotator
-        fields = ('name', 'patterns', 'documents', 'url')
+        model = Annotator
+        fields = ('name', 'patterns', 'documents')
 
 
-class PatternSerializer(serializers.HyperlinkedModelSerializer):
+class DocumentSerializer(ModelSerializer):
     class Meta:
-        model = models.Pattern
-        fields = ('id', 'pattern', 'url')
+        model = Document
+        fields = ('id', 'patterns', 'data')
 
 
-class DocumentSerializer(serializers.HyperlinkedModelSerializer):
+class PatternSerializer(ModelSerializer):
     class Meta:
-        model = models.Document
-        fields = ('id', 'annotator', 'patterns', 'data', 'url')
+        model = Pattern
+        fields = ('id', 'pattern')

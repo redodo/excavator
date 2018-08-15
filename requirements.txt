@@ -2,4 +2,4 @@ regex
 django
 djangorestframework
 psycopg2-binary
-drf-nested-routers
+git+http://github.com/chibisov/drf-extensions.git@00712396be979aaa5a86246bee39284b5e5e8d71#egg=drf-extensions

@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(__file__)
 DEBUG = 'DEBUG' in os.environ
 SECRET_KEY = os.environ.get('SECRET_KEY', 'secret key')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 if 'ALLOWED_HOSTS' in os.environ:
     ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split()
 
