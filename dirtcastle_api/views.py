@@ -1,7 +1,9 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from . import serializers
+from .helpers import create_annotation_agent
 from .mixins import WriteableNestedViewSetMixin
 from .models import Token, Pattern, Annotator, Document
 
@@ -36,6 +38,8 @@ class PatternViewSet(WriteableNestedViewSetMixin, viewsets.ModelViewSet):
         return lookup_fields
 
 
-class AnnotateViewSet(viewsets.ViewSet):
-    def get(self, request):
-        return Response('hello world')
+class AnnotateText(APIView):
+    def post(self, request):
+        agent = create_annotation_agent()
+        annotated_text = agent.annotate(request.body.decode('utf-8'))
+        return Response(annotated_text.to_dict())

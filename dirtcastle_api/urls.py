@@ -31,10 +31,9 @@ annotator_router.register(
     parents_query_lookups=['annotators__pk'],
 )
 
-router.register(r'annotate', views.AnnotateViewSet, base_name='annotate')
-
 
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    path('annotate/', views.AnnotateText.as_view()),
 ]

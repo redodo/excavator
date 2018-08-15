@@ -45,7 +45,7 @@ class AnnotatedText(JsonSerializer):
 
     def to_dict(self):
         return {
-            'lines': self.lines,
+            'lines': [l.to_dict() for l in self.lines],
         }
 
     @classmethod
@@ -117,7 +117,7 @@ class AnnotatedLine(JsonSerializer):
     def to_dict(self):
         return {
             'text': self.text,
-            'annotations': self.annotations,
+            'annotations': [a.to_dict() for a in self.annotations],
         }
 
     @classmethod
