@@ -40,6 +40,9 @@ class PatternViewSet(WriteableNestedViewSetMixin, viewsets.ModelViewSet):
 
 class AnnotateText(APIView):
     def post(self, request):
+        # TODO: accept a JSON object with 'text' and options
+        # TODO: make agent global and refresh it on write actions
+        # TODO: implement object matching framework to create complex objects from annotations (ContainerOrder)
         agent = create_annotation_agent()
         annotated_text = agent.annotate(request.body.decode('utf-8'))
         return Response(annotated_text.to_dict())
