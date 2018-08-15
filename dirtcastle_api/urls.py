@@ -3,7 +3,6 @@ from django.urls import path, include
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 
 from . import views
-from .constants import IGNORED_FIELD
 
 
 router = ExtendedDefaultRouter()
@@ -31,6 +30,8 @@ annotator_router.register(
     base_name='annotators-pattern',
     parents_query_lookups=['annotators__pk'],
 )
+
+router.register(r'annotate', views.AnnotateViewSet, base_name='annotate')
 
 
 urlpatterns = [
