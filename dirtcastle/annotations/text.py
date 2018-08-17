@@ -20,8 +20,15 @@ class AnnotatedText(JsonSerializer):
         return '\n'.join([line.text for line in self.lines])
 
     def disambiguate(self, *args, **kwargs):
-        for line in self.lines:
-            line.annotations.disambiguate(*args, **kwargs)
+        return AnnotatedText(
+            lines=[
+                AnnotatedLine(
+                    text=line.text,
+                    annotations=line.annotations.disambiguate(*args, **kwargs),
+                )
+                for line in self.lines
+            ]
+        )
 
     def __eq__(self, other):
         if not isinstance(other, AnnotatedText):

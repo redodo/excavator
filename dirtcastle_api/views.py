@@ -45,10 +45,10 @@ class AnnotateText(APIView):
         #       objects from annotations, such as an container order
         text = request.body.decode('utf-8')
         annotated_text = request.annotation_agent.annotate(text)
-        annotated_text.disambiguate(discard_others=True)
+        annotated_text = annotated_text.disambiguate(discard_others=True)
 
         response = Response(annotated_text.to_dict())
         # TODO: figure out a more elegant way to mark a request as
-        #       non-interfering to the annotation agent
+        #       non-interfering with the annotation agent
         response.refresh_agent = False
         return response
