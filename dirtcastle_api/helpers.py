@@ -20,7 +20,6 @@ def create_annotation_agent():
             document_patterns = tuple(document.patterns.values_list('pattern', flat=True))
             patterns[document_patterns] = document.data
 
-        print(type(annotator.name))
         agent.create_annotator(annotator.name, patterns=patterns)
 
     return agent

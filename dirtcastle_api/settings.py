@@ -28,6 +28,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'dirtcastle_api.middleware.AnnotationAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'dirtcastle_api.urls'
