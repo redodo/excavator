@@ -69,15 +69,26 @@ class Annotator:
         self.transform = transform
         self.annotation_class = annotation_class
 
-    def annotate(self, text):
-        pattern_builder = self.get_pattern_builder()
+        self._regex_cache = None
+        self.precache_patterns()
+
+    def precache_patterns(self):
+        if self._regex_cache is None:
+            self._regex_cache = {}
+            pattern_builder = self.get_pattern_builder()
+            for patterns, _ in self.patterns.items():
+                for pattern in patterns:
+                    if pattern not in self._regex_cache:
+                        built_pattern = pattern_builder.build(pattern)
+                        built_pattern = self.prepare_pattern(built_pattern)
+
+                        regex = re.compile(built_pattern, flags=self.get_flags())
+                        self._regex_cache[pattern] = regex
+
+    def annotate(self, text, executor=None):
         for patterns, representation in self.patterns.items():
             for pattern in patterns:
-
-                built_pattern = pattern_builder.build(pattern)
-                built_pattern = self.prepare_pattern(built_pattern)
-
-                regex = re.compile(built_pattern, flags=self.get_flags())
+                regex = self._regex_cache[pattern]
 
                 for match in regex.finditer(text):
 

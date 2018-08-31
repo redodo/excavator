@@ -1,3 +1,5 @@
+from time import time
+
 from .helpers import create_annotation_agent
 
 
@@ -27,4 +29,10 @@ class AnnotationAgentMiddleware:
         return response
 
     def create_new_agent(self):
-        return create_annotation_agent()
+        print('Creating new annotation agent...')
+        start = time()
+        agent = create_annotation_agent()
+        delta = time() - start
+        print('Annotation agent created in %.2d seconds' % delta)
+
+        return agent

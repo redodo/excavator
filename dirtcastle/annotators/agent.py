@@ -1,5 +1,6 @@
-from ..annotations import AnnotationList, AnnotatedText, AnnotatedLine
+import concurrent.futures
 
+from ..annotations import AnnotationList, AnnotatedText, AnnotatedLine
 from .base import Annotator
 
 
@@ -24,7 +25,7 @@ class Agent:
         annotator = Annotator(*args, **kwargs)
         self.annotators.append(annotator)
 
-    def annotate(self, text, strip=True):
+    def annotate(self, text, strip=True, workers=4):
         annotated_text = AnnotatedText()
 
         for line in text.splitlines():

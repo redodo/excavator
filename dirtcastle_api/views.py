@@ -1,3 +1,5 @@
+from time import time
+
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -40,6 +42,10 @@ class PatternViewSet(WriteableNestedViewSetMixin, viewsets.ModelViewSet):
 
 class AnnotateText(APIView):
     def post(self, request):
+        start = time()
+
+        # TODO: implement persistent annotation settings with strategies
+        #       and included/excluded annotators
         # TODO: accept a JSON object with 'text' and options
         # TODO: implement object matching framework to create complex
         #       objects from annotations, such as an container order
@@ -47,7 +53,17 @@ class AnnotateText(APIView):
         annotated_text = request.annotation_agent.annotate(text)
         annotated_text = annotated_text.disambiguate(discard_others=True)
 
-        response = Response(annotated_text.to_dict())
+        delta = time() - start
+
+        data = {'took': delta * 1000}
+        data.update(annotated_text.to_dict())
+
+        # Remove annotation spans from data
+        for line in data['lines']:
+            for annotation in line['annotations']:
+                annotation.pop('span')
+
+        response = Response(data)
         # TODO: figure out a more elegant way to mark a request as
         #       non-interfering with the annotation agent
         response.refresh_agent = False
