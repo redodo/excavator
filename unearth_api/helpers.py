@@ -1,4 +1,4 @@
-from dirtcastle.annotators import Agent
+from unearth.annotators import Agent
 
 from .models import Annotator
 

@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from dirtcastle.annotations.span import Span
+from unearth.annotations.span import Span
 
 
 def test_init():

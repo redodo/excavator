@@ -1,6 +1,6 @@
-from dirtcastle.annotators.agent import Agent
-from dirtcastle.annotators.base import Annotator
-from dirtcastle.strategies.type import NearbyTypeStrategy
+from unearth.annotators.agent import Agent
+from unearth.annotators.base import Annotator
+from unearth.strategies.type import NearbyTypeStrategy
 
 
 def test_nearby_type():

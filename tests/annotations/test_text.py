@@ -1,8 +1,8 @@
 import pytest
 
-from dirtcastle.annotations.base import Annotation
-from dirtcastle.annotations.list import AnnotationList
-from dirtcastle.annotations.text import AnnotatedLine, AnnotatedText
+from unearth.annotations.base import Annotation
+from unearth.annotations.list import AnnotationList
+from unearth.annotations.text import AnnotatedLine, AnnotatedText
 
 
 @pytest.fixture

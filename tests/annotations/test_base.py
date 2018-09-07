@@ -1,6 +1,6 @@
 import json
 
-from dirtcastle.annotations.base import Annotation
+from unearth.annotations.base import Annotation
 
 
 def test_eq():

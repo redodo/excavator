@@ -17,7 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'dirtcastle_api',
+    'unearth_api',
 ]
 
 MIDDLEWARE = [
@@ -28,11 +28,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'dirtcastle_api.middleware.AnnotationAgentMiddleware',
+    'unearth_api.middleware.AnnotationAgentMiddleware',
 ]
 
-ROOT_URLCONF = 'dirtcastle_api.urls'
-WSGI_APPLICATION = 'dirtcastle_api.wsgi.application'
+ROOT_URLCONF = 'unearth_api.urls'
+WSGI_APPLICATION = 'unearth_api.wsgi.application'
 
 DATABASES = {
     'default': {

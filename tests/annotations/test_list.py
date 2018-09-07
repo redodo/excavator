@@ -1,5 +1,5 @@
-from dirtcastle.annotations.base import Annotation
-from dirtcastle.annotations.list import AnnotationList
+from unearth.annotations.base import Annotation
+from unearth.annotations.list import AnnotationList
 
 
 def test_combinations():

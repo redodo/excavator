@@ -1,6 +1,6 @@
-from dirtcastle.annotations.base import Annotation
-from dirtcastle.annotators.agent import Agent
-from dirtcastle.annotators.base import Annotator
+from unearth.annotations.base import Annotation
+from unearth.annotators.agent import Agent
+from unearth.annotators.base import Annotator
 
 
 def test_agent():

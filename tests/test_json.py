@@ -1,6 +1,6 @@
-from dirtcastle.annotations.text import AnnotatedText
-from dirtcastle.annotators.agent import Agent
-from dirtcastle.annotators.base import Annotator
+from unearth.annotations.text import AnnotatedText
+from unearth.annotators.agent import Agent
+from unearth.annotators.base import Annotator
 
 
 def test_json_integrity():

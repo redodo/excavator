@@ -1,5 +1,5 @@
-from dirtcastle.annotations.base import Annotation
-from dirtcastle.annotators.base import Annotator
+from unearth.annotations.base import Annotation
+from unearth.annotators.base import Annotator
 
 
 def test_text_case_sensitivity():

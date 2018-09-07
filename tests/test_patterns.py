@@ -1,4 +1,4 @@
-from dirtcastle.patterns.builder import PatternBuilder
+from unearth.patterns.builder import PatternBuilder
 
 
 def test_builder():
