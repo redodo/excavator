@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('data', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('annotator', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='documents', to='dirtcastle_api.Annotator')),
+                ('annotator', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='documents', to='unearth_api.Annotator')),
             ],
         ),
         migrations.CreateModel(
@@ -44,11 +44,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='document',
             name='patterns',
-            field=models.ManyToManyField(related_name='_document_patterns_+', to='dirtcastle_api.Pattern'),
+            field=models.ManyToManyField(related_name='_document_patterns_+', to='unearth_api.Pattern'),
         ),
         migrations.AddField(
             model_name='annotator',
             name='patterns',
-            field=models.ManyToManyField(blank=True, related_name='_annotator_patterns_+', to='dirtcastle_api.Pattern'),
+            field=models.ManyToManyField(blank=True, related_name='_annotator_patterns_+', to='unearth_api.Pattern'),
         ),
     ]

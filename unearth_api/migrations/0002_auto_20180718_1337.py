@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dirtcastle_api', '0001_initial'),
+        ('unearth_api', '0001_initial'),
     ]
 
     operations = [
@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='patterns',
-            field=models.ManyToManyField(blank=True, related_name='_document_patterns_+', to='dirtcastle_api.Pattern'),
+            field=models.ManyToManyField(blank=True, related_name='_document_patterns_+', to='unearth_api.Pattern'),
         ),
     ]
