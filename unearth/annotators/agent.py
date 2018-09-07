@@ -25,7 +25,7 @@ class Agent:
         annotator = Annotator(*args, **kwargs)
         self.annotators.append(annotator)
 
-    def annotate(self, text, strip=True, workers=4):
+    def annotate(self, text, strip=True):
         annotated_text = AnnotatedText()
 
         for line in text.splitlines():

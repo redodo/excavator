@@ -99,7 +99,6 @@ class Annotator:
 
     def annotate(self, text):
         for pattern, representation, match in self.yield_matches(text):
-
             # By default, the representation is used as the extra data
             # assigned to the annotation.
             data = representation
