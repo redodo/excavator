@@ -3,4 +3,4 @@
 # are required, then it's advised to use the `regex` package.
 #
 # This import makes it easy to swap one regex module with another.
-import re
+import regex as re

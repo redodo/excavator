@@ -110,3 +110,21 @@ def test_complex_tokens():
     annotations = list(annotator.annotate(text))
 
     assert len(annotations) == 6
+
+
+def test_fuzziness():
+    text = '''
+    h3llo w0rld h311o w0r1d
+    '''
+
+    annotator = Annotator(
+        'HelloWorld',
+        patterns=('hello', 'world'),
+        settings={
+            'fuzzy_error_rate': 0.1,
+            'fuzzy_min_errors_allowed': 1,
+        },
+    )
+
+    annotations = list(annotator.annotate(text))
+    assert len(annotations) == 2

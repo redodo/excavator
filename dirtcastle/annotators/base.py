@@ -50,6 +50,11 @@ class Annotator:
     default_settings = {
         'case_sensitive': False,
         'word_boundary': True,
+        'word_boundary_start': None,  # defaults to `word_boundary`
+        'word_boundary_end': None,    # defaults to `word_boundary`
+        'fuzzy_costs': '1i+1d+1s',
+        'fuzzy_error_rate': 0,
+        'fuzzy_min_errors_allowed': 0,
     }
 
     WORD_BOUNDARY_START = r'(?:^|\b)'
@@ -123,12 +128,33 @@ class Annotator:
                     )
 
     def prepare_pattern(self, pattern):
-        if self.settings['word_boundary']:
-            pattern = r'%s%s%s' % (
-                self.WORD_BOUNDARY_START,
+        # TODO: Implement pattern pre-processors for word_boundary and
+        #       fuzziness. Post-processors as well? (for time representation)
+
+        allowed_errors = max(
+            self.settings['fuzzy_min_errors_allowed'],
+            int(len(pattern) * self.settings['fuzzy_error_rate']),
+        )
+        if allowed_errors > 0:
+            pattern = r'(?e)(?:%s){%s<=%i}' % (
                 pattern,
-                self.WORD_BOUNDARY_END,
+                self.settings['fuzzy_costs'],
+                allowed_errors,
             )
+
+        word_boundary_start = self.settings['word_boundary_start']
+        if word_boundary_start is None:
+            word_boundary_start = self.settings['word_boundary']
+
+        word_boundary_end = self.settings['word_boundary_end']
+        if word_boundary_end is None:
+            word_boundary_end = self.settings['word_boundary']
+
+        if word_boundary_start:
+            pattern = self.WORD_BOUNDARY_START + pattern
+        if word_boundary_end:
+            pattern = pattern + self.WORD_BOUNDARY_END
+
         return pattern
 
     def get_name(self):
