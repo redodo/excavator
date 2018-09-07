@@ -90,42 +90,44 @@ class Annotator:
                         regex = re.compile(built_pattern, flags=self.get_flags())
                         self._regex_cache[pattern] = regex
 
-    def annotate(self, text, executor=None):
+    def yield_matches(self, text):
         for patterns, representation in self.patterns.items():
             for pattern in patterns:
                 regex = self._regex_cache[pattern]
-
                 for match in regex.finditer(text):
+                    yield pattern, representation, match
 
-                    # By default, the representation is used as the
-                    # extra data assigned to the annotation.
-                    data = representation
+    def annotate(self, text):
+        for pattern, representation, match in self.yield_matches(text):
 
-                    # When a transform callback is given, the named
-                    # groups will be passed to this method, and the
-                    # result will be used as the extra annotation data.
-                    if self.transform is not None:
-                        try:
-                            data = self.transform(**match.groupdict())
-                        except Exception as e:
-                            # emit a warning without stopping program
-                            # execution
-                            warnings.warn((
-                                'The transform method of annotator {} raised '
-                                'an exception when given {} as input:\n'
-                                '    {}: {}'
-                            ).format(
-                                repr(self.get_name()),
-                                kwargs_notation(match.groupdict()),
-                                e.__class__.__name__,
-                                e,
-                            ))
+            # By default, the representation is used as the extra data
+            # assigned to the annotation.
+            data = representation
 
-                    yield self.create_annotation(
-                        text=match.group(0),
-                        span=match.span(),
-                        data=data,
-                    )
+            # When a transform callback is given, the named groups will
+            # be passed to this method, and the result will be used as
+            # the extra annotation data.
+            if self.transform is not None:
+                try:
+                    data = self.transform(**match.groupdict())
+                except Exception as e:
+                    # emit a warning without stopping program execution
+                    warnings.warn((
+                        'The transform method of annotator {} raised '
+                        'an exception when given {} as input:\n'
+                        '    {}: {}'
+                    ).format(
+                        repr(self.get_name()),
+                        kwargs_notation(match.groupdict()),
+                        e.__class__.__name__,
+                        e,
+                    ))
+
+            yield self.create_annotation(
+                text=match.group(0),
+                span=match.span(),
+                data=data,
+            )
 
     def prepare_pattern(self, pattern):
         # TODO: Implement pattern pre-processors for word_boundary and
