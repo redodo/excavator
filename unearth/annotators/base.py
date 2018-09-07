@@ -160,9 +160,6 @@ class Annotator:
     def get_name(self):
         return self.name
 
-    def is_case_sensitive(self):
-        return self.case_sensitive
-
     def get_flags(self):
         flags = 0
         if not self.settings['case_sensitive']:
