@@ -115,6 +115,7 @@ def test_complex_tokens():
 def test_fuzziness():
     text = '''
     h3llo w0rld h311o w0r1d
+    H3LLO W0RLD
     '''
 
     annotator = Annotator(
@@ -123,6 +124,22 @@ def test_fuzziness():
         settings={
             'fuzzy_error_rate': 0.1,
             'fuzzy_min_errors_allowed': 1,
+        },
+    )
+
+    annotations = list(annotator.annotate(text))
+    assert len(annotations) == 4
+
+
+def test_word_boundary():
+    text = '1XHello and 2x World Nothing3x'
+
+    annotator = Annotator(
+        'Multiply',
+        patterns=r'/(?P<amount>\d+)x/',
+        transform=lambda amount: int(amount),
+        settings={
+            'word_boundary_end': False,
         },
     )
 
