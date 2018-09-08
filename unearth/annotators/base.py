@@ -113,6 +113,7 @@ class Annotator:
                 for reserved_span in reserved_spans:
                     if span in reserved_span:
                         ignore_match = True
+                        break
                 if ignore_match:
                     continue
                 reserved_spans.append(span)
