@@ -1,6 +1,6 @@
 import warnings
 
-from ..annotations import Annotation
+from ..annotations import Annotation, Span
 from ..patterns import PatternBuilder
 from ..regex import re
 from ..utils import kwargs_notation
@@ -55,6 +55,10 @@ class Annotator:
         'fuzzy_costs': '1i+1d+1s',
         'fuzzy_error_rate': 0,
         'fuzzy_min_errors_allowed': 0,
+
+        # colliding matches will yield only the first match
+        # TODO: should this be renamed?
+        'no_collisions': False,
     }
 
     WORD_BOUNDARY_START = r'(?:^|\b)'
@@ -98,7 +102,21 @@ class Annotator:
                     yield pattern, representation, match
 
     def annotate(self, text):
+        if self.settings['no_collisions']:
+            reserved_spans = []
+
         for pattern, representation, match in self.yield_matches(text):
+
+            if self.settings['no_collisions']:
+                ignore_match = False
+                span = Span(match.span())
+                for reserved_span in reserved_spans:
+                    if span in reserved_span:
+                        ignore_match = True
+                if ignore_match:
+                    continue
+                reserved_spans.append(span)
+
             # By default, the representation is used as the extra data
             # assigned to the annotation.
             data = representation
