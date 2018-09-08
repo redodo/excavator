@@ -39,7 +39,9 @@ def resolve_pattern(tokens, pattern):
     for text, token, _, _ in Formatter().parse(pattern):
         if text:
             segments.append(segment_class(tokens, text))
-        if token:
+        if token and ',' not in token:
+            # TODO: fix collisions with the following syntax *better*:
+            #           a{,2}b{3,5}c{4}
             segments.append(tokens[token])
 
     return ''.join([s.get_value() for s in segments])
