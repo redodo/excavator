@@ -59,6 +59,9 @@ class Annotator:
         # colliding matches will yield only the first match
         # TODO: should this be renamed?
         'no_collisions': False,
+
+        # Turns on POSIX matching, returning the longest match
+        'posix': False,
     }
 
     WORD_BOUNDARY_START = r'(?:^|\b)'
@@ -174,6 +177,9 @@ class Annotator:
             pattern = self.WORD_BOUNDARY_START + pattern
         if word_boundary_end:
             pattern = pattern + self.WORD_BOUNDARY_END
+
+        if self.settings['posix']:
+            pattern = r'(?p)' + pattern
 
         return pattern
 
