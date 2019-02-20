@@ -33,7 +33,7 @@ class Span(tuple):
 
         return super().__new__(cls, (start, end))
 
-    def __spanesque(self, obj):
+    def __spanlike(self, obj):
         return isinstance(obj, Span) or (
             isinstance(obj, self.LIST_TYPES) and
             len(obj) == 2
@@ -73,11 +73,10 @@ class Span(tuple):
         return self - other
 
     def __contains__(self, other):
-        if self.__spanesque(other):
+        if self.__spanlike(other):
             return (
                 self[START] <= other[START] < self[END] or
-                self[START] < other[END] < self[END]
-            ) or (
+                self[START] < other[END] < self[END] or
                 other[START] <= self[START] < other[END] or
                 other[START] < self[END] < other[END]
             )
@@ -85,7 +84,7 @@ class Span(tuple):
         return self[START] <= other < self[END]
 
     def __lt__(self, other):
-        if self.__spanesque(other):
+        if self.__spanlike(other):
             return self[START] < other[START] or (
                 self[START] == other[START] and
                 self[END] > other[END]
@@ -97,7 +96,7 @@ class Span(tuple):
         return self == other or self < other
 
     def __gt__(self, other):
-        if self.__spanesque(other):
+        if self.__spanlike(other):
             return self[START] > other[START] or (
                 self[START] == other[START] and
                 self[END] < other[END]
