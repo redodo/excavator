@@ -33,7 +33,3 @@ class JsonSerializer(DictSerializer):
     @classmethod
     def from_json(cls, d):
         return cls.from_dict(json.loads(d))
-
-
-def kwargs_notation(d):
-    return '(%s)' % ', '.join(['%s=%s' % (k, repr(v)) for k, v in d.items()])
