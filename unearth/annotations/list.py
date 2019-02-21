@@ -1,12 +1,10 @@
 import functools
 
-from ..utils import JsonSerializer
-
 from .base import Annotation
 from .span import Span
 
 
-class AnnotationList(list, JsonSerializer):
+class AnnotationList(list):
     
     def __init__(self, iterable=()):
         self._cells = None
@@ -130,13 +128,6 @@ class AnnotationList(list, JsonSerializer):
                 # prevent re-doing ordering (the data is already ordered)
                 sublist.insert(index, annotation)
         return sublist
-
-    @classmethod
-    def from_dict(cls, d):
-        return cls([
-            Annotation.from_dict(i)
-            for i in d
-        ])
 
     def copy(self):
         return AnnotationList([a.copy() for a in self])

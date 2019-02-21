@@ -1,11 +1,9 @@
-from ..utils import JsonSerializer
-
 from .base import Annotation
 from .span import Span
 from .list import AnnotationList
 
 
-class AnnotatedText(JsonSerializer):
+class AnnotatedText:
 
     def __init__(self, lines=None):
         self.lines = lines or []
@@ -50,20 +48,8 @@ class AnnotatedText(JsonSerializer):
     def __str__(self):
         return self.__repr__()
 
-    def to_dict(self):
-        return {
-            'text': self.text,
-            'lines': [l.to_dict() for l in self.lines],
-        }
 
-    @classmethod
-    def from_dict(cls, d):
-        return cls(
-            lines=[AnnotatedLine.from_dict(i) for i in d.get('lines', [])],
-        )
-
-
-class AnnotatedLine(JsonSerializer):
+class AnnotatedLine:
 
     JOIN_CHAR = ' '
 
@@ -121,16 +107,3 @@ class AnnotatedLine(JsonSerializer):
 
     def __str__(self):
         return self.__repr__()
-
-    def to_dict(self):
-        return {
-            'text': self.text,
-            'annotations': [a.to_dict() for a in self.annotations],
-        }
-
-    @classmethod
-    def from_dict(cls, d):
-        return cls(
-            text=d.get('text', None),
-            annotations=AnnotationList.from_dict(d.get('annotations', None)),
-        )

@@ -1,6 +1,3 @@
-from ..utils import JsonSerializer
-
-
 # The start and end indices for compatibility with regular lists and tuples
 START = 0
 END = 1
