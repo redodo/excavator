@@ -9,4 +9,9 @@ setup(
         'click',
         'regex',
     ],
+    extras_require={
+        'dev': [
+            'pytest',
+        ],
+    },
 )
