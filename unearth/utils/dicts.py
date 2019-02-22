@@ -8,13 +8,12 @@ class CascadeDict(dict):
         return self._cascade_missing_key(key)
 
     def __contains__(self, key):
-        print('Calling CascadeDict.__contains__')
         return (
             super().__contains__(key) or
-            self._key_in_parent(key)
+            self._can_cascade_key(key)
         )
 
-    def _key_in_parent(self, key):
+    def _can_cascade_key(self, key):
         for parent in self._parents:
             if key in parent:
                 return True
@@ -31,50 +30,77 @@ class CascadeDict(dict):
             raise KeyError(key)
         return value
 
+    def __str__(self):
+        return '<{}(CascadeDict){}>'.format(
+            self.__class__.__name__,
+            super().__repr__(),
+        )
+    __repr__ = __str__
+
 
 class ComputeDict(dict):
 
     def __init__(self, **data):
-        self._items = data
+        self._dict = data
 
     def compute(self, key, value):
         raise NotImplementedError('compute method not implemented')
 
+    def invalidate(self, key):
+        super().__delitem__(key)
+
     def __contains__(self, key):
-        print('Calling ComputeDict.__contains__')
-        return key in self._items
+        return (
+            super().__contains__(key) or
+            self._can_compute_key(key)
+        )
 
     def __missing__(self, key):
         return self._compute_missing_key(key)
 
+    def __delitem__(self, key):
+        super().__delitem__(key)
+        del self._dict[key]
+
+    def _can_compute_key(self, key):
+        return key in self._dict
+
     def _compute_missing_key(self, key):
-        if key in self._items:
-            self[key] = self.compute(key, self._items[key])
+        if key in self._dict:
+            self[key] = self.compute(key, self._dict[key])
             return self[key]
-        print('<-- gonna raise a keyerror here')
         raise KeyError(key)
+
+    def __str__(self):
+        return '<{}(ComputeDict){}>'.format(
+            self.__class__.__name__,
+            super().__repr__(),
+        )
+    __repr__ = __str__
 
 
 class ComputeCascadeDict(ComputeDict, CascadeDict):
 
     def __init__(self, *parents, **data):
         self._parents = parents
-        self._items = data
-
-        print('initting dict')
-        print(f'_parents = {parents}')
-        print(f'_items = {data}')
-        super().__init__()
+        self._dict = data
 
     def __contains__(self, key):
         return (
-            key in self._items or
-            self._key_in_parent(key)
+            # calls ComputeDict.__contains__
+            super().__contains__(key) or
+            self._can_cascade_key(key)
         )
 
     def __missing__(self, key):
         try:
             return self._compute_missing_key(key)
         except KeyError:
-            print('lets cascade!')
             return self._cascade_missing_key(key)
+
+    def __str__(self):
+        return '<{}(ComputeCascadeDict){}>'.format(
+            self.__class__.__name__,
+            super().__repr__(),
+        )
+    __repr__ = __str__

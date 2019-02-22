@@ -65,32 +65,39 @@ def test_multiple_parents():
         b['this_does_not_exist']
 
 
+class LengthDict(ComputeDict):
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # keep a count to test if the compute function is cached
+        self.compute_count = 0
+
+    def compute(self, key, value):
+        self.compute_count += 1
+        return len(value)
+
+
 def test_compute_dict():
+    a = LengthDict(len1='1', len2='12', len3='123', len4='1234', len5='12345')
+    assert a['len1'] == 1
+    assert a['len1'] == 1
+    assert a.compute_count == 1
 
-    class LengthDict(ComputeDict):
+    # test invalidation
+    a.invalidate('len1')
+    assert a['len1'] == 1
+    assert a.compute_count == 2
 
-        def __init__(self, **data):
-            super().__init__(**data)
-            # keep a count to test if the compute function is cached
-            self.runcount = 0
+    # test deletion
+    del a['len1']
+    with pytest.raises(KeyError):
+        a['len1']
 
-        def compute(self, key, value):
-            self.runcount += 1
-            return len(value)
-
-    d = LengthDict(hello='world', len4='test', len6='test12')
-
-    assert 'len4' in d
-    assert 'len6' in d
-
-    assert d['hello'] == 5
-    assert d['len4'] == 4
-    assert d['len6'] == 6
-
-    # invalidation is possible with `del`
-    # TODO: or should del remove the value?
-    del d['hello']
-    assert d['hello'] == 5
+    # test the rest of the keys for correct computation
+    assert a['len2'] == 2
+    assert a['len3'] == 3
+    assert a['len4'] == 4
+    assert a['len5'] == 5
 
 
 def test_compute_cascade_dict():
@@ -105,9 +112,7 @@ def test_compute_cascade_dict():
     c = LengthDict(b, len4='____')
 
     assert 'len2' in a1
-    print('\n-- you better assert correctly!')
     assert 'len2' in c
-    print('-- did you?')
     assert 'len4' in c
 
     assert c['len2'] == 2
