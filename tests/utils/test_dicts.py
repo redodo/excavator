@@ -65,19 +65,19 @@ def test_multiple_parents():
         b['this_does_not_exist']
 
 
-class LengthDict(ComputeDict):
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        # keep a count to test if the compute function is cached
-        self.compute_count = 0
-
-    def compute(self, key, value):
-        self.compute_count += 1
-        return len(value)
-
-
 def test_compute_dict():
+
+    class LengthDict(ComputeDict):
+
+        def __init__(self, **data):
+            super().__init__(**data)
+            # keep a count to test if the compute function is cached
+            self.compute_count = 0
+
+        def compute(self, key, value):
+            self.compute_count += 1
+            return len(value)
+
     a = LengthDict(len1='1', len2='12', len3='123', len4='1234', len5='12345')
     assert a['len1'] == 1
     assert a['len1'] == 1

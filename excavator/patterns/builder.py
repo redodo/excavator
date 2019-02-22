@@ -27,10 +27,11 @@ class PatternBuilder:
     }
 
     def __init__(self, settings=None, tokens=None):
+        # TODO: Use corpus settings when they're ready
         self.settings = self.default_settings.copy()
         self.settings.update(settings or {})
 
-        self.tokens = LazyTokenSegmentDict(**tokens)
+        self.tokens = LazyTokenSegmentDict(**(tokens or {}))
 
     def get_flags(self):
         flags = 0

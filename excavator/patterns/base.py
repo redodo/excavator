@@ -18,13 +18,14 @@ def is_regex(s):
 
 
 def unpad_regex(r):
+    # TODO: This is pretty fragile... No support for modifiers: "/test/i"
     return r[REGEX_PADDING_LEN:-REGEX_PADDING_LEN]
 
 
 def resolve_pattern(tokens, pattern):
     """TODO: rename this function
 
-    This function extracts fills token values in a pattern and escapes
+    This function extracts and fills token values in a pattern and escapes
     plaintext.
     """
     segments = []
