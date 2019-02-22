@@ -139,7 +139,7 @@ def test_word_boundary():
         patterns=r'/(?P<amount>\d+)x/',
         transform=lambda amount: int(amount),
         settings={
-            'word_boundary_end': False,
+            'do_word_boundary_end': False,
         },
     )
 

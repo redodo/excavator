@@ -13,7 +13,7 @@ def test_builder():
     }
     raw_pattern = '{greetings}{sep}{object}{??}{?}'
 
-    builder = PatternBuilder(raw_tokens)
+    builder = PatternBuilder(tokens=raw_tokens)
     pattern = builder.compile(raw_pattern)
 
     assert pattern.match('hello world')
