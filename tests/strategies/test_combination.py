@@ -1,5 +1,5 @@
-from unearth.annotators.agent import Agent
-from unearth.strategies.combination import CombinationStrategy
+from excavator.annotators.agent import Agent
+from excavator.strategies.combination import CombinationStrategy
 
 
 def test_combination_strategy():

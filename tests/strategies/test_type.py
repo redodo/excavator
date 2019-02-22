@@ -1,6 +1,6 @@
-from unearth.annotators.agent import Agent
-from unearth.annotators.base import Annotator
-from unearth.strategies.type import NearbyTypeStrategy
+from excavator.annotators.agent import Agent
+from excavator.annotators.base import Annotator
+from excavator.strategies.type import NearbyTypeStrategy
 
 
 def test_nearby_type():

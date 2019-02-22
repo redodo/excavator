@@ -1,5 +1,5 @@
-from unearth.annotations.base import Annotation
-from unearth.annotations.list import AnnotationList
+from excavator.annotations.base import Annotation
+from excavator.annotations.list import AnnotationList
 
 
 def test_combinations():

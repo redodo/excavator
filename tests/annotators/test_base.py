@@ -1,5 +1,5 @@
-from unearth.annotations.base import Annotation
-from unearth.annotators.base import Annotator
+from excavator.annotations.base import Annotation
+from excavator.annotators.base import Annotator
 
 
 def test_text_case_sensitivity():

@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from unearth.annotations.span import Span
+from excavator.annotations.span import Span
 
 
 def test_init():

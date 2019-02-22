@@ -1,6 +1,6 @@
 import json
 
-from unearth.annotations.base import Annotation
+from excavator.annotations.base import Annotation
 
 
 def test_eq():

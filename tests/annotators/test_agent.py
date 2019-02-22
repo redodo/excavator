@@ -1,6 +1,6 @@
-from unearth.annotations.base import Annotation
-from unearth.annotators.agent import Agent
-from unearth.annotators.base import Annotator
+from excavator.annotations.base import Annotation
+from excavator.annotators.agent import Agent
+from excavator.annotators.base import Annotator
 
 
 def test_agent():

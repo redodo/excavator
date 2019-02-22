@@ -1,9 +1,9 @@
 import json
 
-from unearth.annotations.text import AnnotatedText
-from unearth.annotators.agent import Agent
-from unearth.annotators.base import Annotator
-from unearth.utils.serialize import default_json_serialize
+from excavator.annotations.text import AnnotatedText
+from excavator.annotators.agent import Agent
+from excavator.annotators.base import Annotator
+from excavator.utils.serialize import default_json_serialize
 
 
 def test_json_integrity():

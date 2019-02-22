@@ -1,6 +1,6 @@
-from unearth.annotators.agent import Agent
-from unearth.annotators.base import Annotator
-from unearth.strategies.density import IncreaseDensityStrategy
+from excavator.annotators.agent import Agent
+from excavator.annotators.base import Annotator
+from excavator.strategies.density import IncreaseDensityStrategy
 
 
 def test_increase_density():

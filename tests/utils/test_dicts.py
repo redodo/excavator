@@ -1,6 +1,6 @@
 import pytest
 
-from unearth.utils.dicts import (
+from excavator.utils.dicts import (
     CascadeDict,
     ComputeDict,
     ComputeCascadeDict,

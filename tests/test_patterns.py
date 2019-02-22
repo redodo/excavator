@@ -1,4 +1,4 @@
-from unearth.patterns.builder import PatternBuilder
+from excavator.patterns.builder import PatternBuilder
 
 
 def test_builder():

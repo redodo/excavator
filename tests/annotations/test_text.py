@@ -1,8 +1,8 @@
 import pytest
 
-from unearth.annotations.base import Annotation
-from unearth.annotations.list import AnnotationList
-from unearth.annotations.text import AnnotatedLine, AnnotatedText
+from excavator.annotations.base import Annotation
+from excavator.annotations.list import AnnotationList
+from excavator.annotations.text import AnnotatedLine, AnnotatedText
 
 
 @pytest.fixture
