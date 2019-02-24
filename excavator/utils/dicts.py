@@ -122,8 +122,7 @@ class ComputeCascadeDict(ComputeDict, CascadeDict):
 
     def __contains__(self, key):
         return (
-            # calls ComputeDict.__contains__
-            super().__contains__(key) or
+            super().__contains__(key) or  # calls ComputeDict.__contains__
             self._can_cascade_key(key)
         )
 
