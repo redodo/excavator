@@ -1,9 +1,9 @@
 class CascadeDict(dict):
     
-    def __init__(self, parents=None, lookup=None, **data):
-        self._parents = parents or []
-        self._lookup = None
-        super().__init__(**data)
+    def __init__(self, parents=None, lookup=None, data=None):
+        self._parents = [] if parents is None else parents
+        self._lookup = lookup
+        super().__init__(**(data or {}))
 
     def __missing__(self, key):
         return self._cascade_missing_key(key)
@@ -29,13 +29,30 @@ class CascadeDict(dict):
                 container = parent
                 if self._lookup:
                     container = self._lookup(parent)
-                value = parent.__getitem__(key)
+                value = container.__getitem__(key)
                 break
             except KeyError as e:
                 continue
         else:  # no break
             raise KeyError(key)
         return value
+
+    def cascade_all_keys(self):
+        """Returns a set with all possible keys"""
+        keys = set(self.keys())
+        for parent in self._parents:
+            container = parent
+            if self._lookup:
+                container = self._lookup(parent)
+            try:
+                keys |= container.cascade_all_keys()
+            except AttributeError:
+                keys |= set(container.keys())
+        return keys
+
+    def cascade_all(self):
+        """Returns a dictionary with all possible key-values cascaded"""
+        return {key: self[key] for key in self.cascade_all_keys()}
 
     def __str__(self):
         return '<{}(CascadeDict){}>'.format(
@@ -88,10 +105,10 @@ class ComputeDict(dict):
 
 class ComputeCascadeDict(ComputeDict, CascadeDict):
 
-    def __init__(self, parents=None, lookup=None, **data):
+    def __init__(self, parents=None, lookup=None, data=None):
         self._parents = parents or []
         self._lookup = lookup
-        self._dict = data
+        self._dict = data or {}
 
     def __contains__(self, key):
         return (

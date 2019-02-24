@@ -48,10 +48,41 @@ class Node:
         self.settings = CascadeDict(
             self.parents,
             lookup=lambda parent: parent.settings,
+            data=(settings or {}),
         )
 
 
-if __name__ == '__main__':
+class Root(Node):
+    
+    default_settings = {
+        'case_sensitive': False,
+        'do_word_boundary': True,
+        # 'do_word_boundary_start': None,  # defaults to `word_boundary`
+        # 'do_word_boundary_end': None,    # defaults to `word_boundary`
+        'word_boundary_start': r'(?:^|\b)',
+        'word_boundary_end': r'(?:\b|$)',
+        'fuzzy_costs': '1i+1d+1s',
+        'fuzzy_error_rate': 0,
+        'fuzzy_min_errors_allowed': 0,
+
+        # colliding matches will yield only the first match
+        # TODO: should this be renamed?
+        # 'no_collisions': False,
+
+        # Turns on POSIX matching, returning the longest match
+        'posix': False,
+    }
+
+    def __init__(self, settings=None):
+        self.children = ReverseSet(self, 'parents')
+
+        self.settings = CascadeDict(
+            (self.default_settings,),
+            data=(settings or {}),
+        )
+
+
+def test_node_integrity():
     A = Node()
     B = Node()
 
@@ -75,7 +106,19 @@ if __name__ == '__main__':
     A.parents.clear()
     assert A not in B.children
 
-    A.parents.add(A)
 
-    print(A.children)
-    print(B)
+def test_root_settings():
+    root = Root()
+    child = Node(settings={'posix': True})
+    child.parents.add(root)
+
+    assert child.settings['posix'] == True
+    assert child.settings['case_sensitive'] == False
+    assert child in root.children
+
+    print(child.settings.cascade_all())
+
+
+if __name__ == '__main__':
+    test_node_integrity()
+    test_root_settings()
