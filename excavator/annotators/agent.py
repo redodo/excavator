@@ -8,7 +8,7 @@ class Agent:
 
     def __init__(self):
         self.strategies = list()
-        self.annotators = list()
+        self.corpus = corpus
 
     def add_strategy(self, strategy, order=None):
         if isinstance(strategy, type):

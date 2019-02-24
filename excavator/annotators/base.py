@@ -1,3 +1,4 @@
+import pickle
 import warnings
 
 from ..annotations import Annotation, Span
@@ -54,11 +55,28 @@ class Corpus:
         # Turns on POSIX matching, returning the longest match
         'posix': False,
     }
+    
+    PICKLE_PROTOCOL = 4
 
-    def __init__(self, settings=None, tokens=None, classifiers=None):
+    def __init__(self, settings=None, tokens=None):
         self.settings = CascadeDict(self.default_settings, **(settings or {}))
         self.tokens = None or {}
-        self.classifiers = None or []
+        self.classifiers = set()
+
+    def save(self, filename):
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f, protocol=self.PICKLE_PROTOCOL)
+
+    @staticmethod
+    def load(filename):
+        with open(filename, 'rb') as f:
+            return pickle.load(f)
+
+
+# Add and remove a classifier to corpus:
+#   corpus.classifiers.add(classifier)
+#   corpus.classifiers.remove(classifier)
+
 
 
 # TODO: Rename this to 'Classifier'

@@ -6,27 +6,9 @@ from .tokens import LazyTokenSegmentDict
 
 class PatternBuilder:
 
-    #: The default settings (these should be the root settings CascadeDict of all subsettings)
-    default_settings = {
-        'case_sensitive': False,
-        'do_word_boundary': True,
-        # 'do_word_boundary_start': None,  # defaults to `word_boundary`
-        # 'do_word_boundary_end': None,    # defaults to `word_boundary`
-        'word_boundary_start': r'(?:^|\b)',
-        'word_boundary_end': r'(?:\b|$)',
-        'fuzzy_costs': '1i+1d+1s',
-        'fuzzy_error_rate': 0,
-        'fuzzy_min_errors_allowed': 0,
-
-        # colliding matches will yield only the first match
-        # TODO: should this be renamed?
-        # 'no_collisions': False,
-
-        # Turns on POSIX matching, returning the longest match
-        'posix': False,
-    }
-
     def __init__(self, settings=None, tokens=None):
+        # !! The settings and tokens of the pattern builder never differ from
+        # the settings and tokens of the classifier (merge?)
         # TODO: Use corpus settings when they're ready
         self.settings = self.default_settings.copy()
         self.settings.update(settings or {})

@@ -1,3 +1,5 @@
+# TODO: Find a better name for 'Strategy'. Also, figure out if using a numpy array
+#       could greatly improve the implementation of a strategy.
 class Strategy:
 
     def apply(self, text):

@@ -1,7 +1,8 @@
 class CascadeDict(dict):
     
-    def __init__(self, *parents, **data):
-        self._parents = parents
+    def __init__(self, parents=None, lookup=None, **data):
+        self._parents = parents or []
+        self._lookup = None
         super().__init__(**data)
 
     def __missing__(self, key):
@@ -15,13 +16,19 @@ class CascadeDict(dict):
 
     def _can_cascade_key(self, key):
         for parent in self._parents:
-            if key in parent:
+            container = parent
+            if self._lookup:
+                container = self._lookup(parent)
+            if key in container:
                 return True
         return False
 
     def _cascade_missing_key(self, key):
         for parent in self._parents:
             try:
+                container = parent
+                if self._lookup:
+                    container = self._lookup(parent)
                 value = parent.__getitem__(key)
                 break
             except KeyError as e:
@@ -81,8 +88,9 @@ class ComputeDict(dict):
 
 class ComputeCascadeDict(ComputeDict, CascadeDict):
 
-    def __init__(self, *parents, **data):
-        self._parents = parents
+    def __init__(self, parents=None, lookup=None, **data):
+        self._parents = parents or []
+        self._lookup = lookup
         self._dict = data
 
     def __contains__(self, key):

@@ -9,8 +9,8 @@ from excavator.utils.dicts import (
 
 def test_cascade_dict():
     a = dict(hello='a', world=True)
-    b = CascadeDict(a, hello='b', entry='test')
-    c = CascadeDict(b, hello='c', world=False)
+    b = CascadeDict([a], hello='b', entry='test')
+    c = CascadeDict([b], hello='c', world=False)
 
     assert 'hello' in c
     assert 'world' in c
@@ -33,7 +33,7 @@ def test_cascade_dict():
 
 def test_init_parent():
     a = dict(hello='world')
-    b = CascadeDict(a, parent='value', parents='value2', data='value3')
+    b = CascadeDict([a], parent='value', parents='value2', data='value3')
 
     assert b['hello'] == 'world'
     assert b['parent'] == 'value'
@@ -45,7 +45,7 @@ def test_multiple_parents():
     a1 = dict(hello='world')
     a2 = dict(world='hello')
 
-    b = CascadeDict(a1, a2, something='value')
+    b = CascadeDict([a1, a2], something='value')
 
     assert b['hello'] == 'world'
     assert b['world'] == 'hello'
@@ -108,8 +108,8 @@ def test_compute_cascade_dict():
 
     a1 = LengthDict(len2='__')
     a2 = LengthDict(len3='___')
-    b = LengthDict(a1, a2)
-    c = LengthDict(b, len4='____')
+    b = LengthDict([a1, a2])
+    c = LengthDict([b], len4='____')
 
     assert 'len2' in a1
     assert 'len2' in c
