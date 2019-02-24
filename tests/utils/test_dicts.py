@@ -99,6 +99,10 @@ def test_compute_dict():
     assert a['len4'] == 4
     assert a['len5'] == 5
 
+    # test if assignment works
+    a['len7'] = '1234567'
+    assert a['len7'] == 7
+
 
 def test_compute_cascade_dict():
 

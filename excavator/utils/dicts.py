@@ -82,6 +82,12 @@ class ComputeDict(dict):
     def __missing__(self, key):
         return self._compute_missing_key(key)
 
+    def __setitem__(self, key, value, is_computed=False):
+        if not is_computed:
+            self._dict[key] = value
+        else:
+            super().__setitem__(key, value)
+
     def __delitem__(self, key):
         super().__delitem__(key)
         del self._dict[key]
@@ -91,7 +97,11 @@ class ComputeDict(dict):
 
     def _compute_missing_key(self, key):
         if key in self._dict:
-            self[key] = self.compute(key, self._dict[key])
+            self.__setitem__(
+                key,
+                self.compute(key, self._dict[key]),
+                is_computed=True,
+            )
             return self[key]
         raise KeyError(key)
 
