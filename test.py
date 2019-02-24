@@ -2,6 +2,7 @@ from excavator.utils.dicts import CascadeDict
 
 
 class ReverseSet(set):
+    __slots__ = 'owner', 'reverse_attr'
 
     def __init__(self, owner, reverse_attr, *elements):
         self.owner = owner
@@ -117,6 +118,13 @@ def test_root_settings():
     assert a.settings['posix'] == True
     assert a.settings['case_sensitive'] == False
     assert a in root.children
+
+    assert a.settings['do_word_boundary'] == True
+    assert b.settings['do_word_boundary'] == True
+
+    root.settings['do_word_boundary'] = False
+    assert a.settings['do_word_boundary'] == False
+    assert b.settings['do_word_boundary'] == False
 
     print(b.settings.cascade_all())
 

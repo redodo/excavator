@@ -1,4 +1,5 @@
 class ReverseSet(set):
+    __slots__ = 'owner', 'reverse_attr'
 
     def __init__(self, owner, reverse_attr, *elements):
         self.owner = owner
@@ -32,5 +33,12 @@ class ReverseSet(set):
         except KeyError:
             pass
 
-    # TODO: implement `update`, `intersection_update`, `difference_update`,
-    #       and `symmetric_difference_update`
+    def update(self, *others):
+        for other in others:
+            for elem in other:
+                self.add(elem)
+
+    # TODO: implement
+    #         - intersection_update
+    #         - difference_update
+    #         - symmetric_difference_update
