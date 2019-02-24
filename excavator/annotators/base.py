@@ -59,9 +59,15 @@ class Corpus:
     PICKLE_PROTOCOL = 4
 
     def __init__(self, settings=None, tokens=None):
-        self.settings = CascadeDict(self.default_settings, **(settings or {}))
+        self.settings = CascadeDict(
+            (self.default_settings,),
+            data=settings or {},
+        )
         self.tokens = None or {}
-        self.classifiers = set()
+
+        # you can use corpus.children.add or corpus.classifiers.add to add a classifier
+        self.children = ReverseSet(self, 'parents')
+        self.classifiers = self.children
 
     def save(self, filename):
         with open(filename, 'wb') as f:
@@ -71,6 +77,30 @@ class Corpus:
     def load(filename):
         with open(filename, 'rb') as f:
             return pickle.load(f)
+
+
+class Classifier:
+    
+    def __init__(self, parent, settings=None, tokens=None):
+        self.parents = ReverseSet(self, 'children')
+        self.children = ReverseSet(self, 'parents')
+        self.subclassifiers = self.children
+
+        self.settings = CascadeDict(
+            (corpus,),
+            lookup=lambda parent: parent.settings,
+            data=settings or {},
+        )
+        self.tokens = TokenDict(
+            (corpus,),
+            lookup=lambda parent: parent.tokens,
+            data=tokens or {},
+        )
+        self.pattern_builder = PatternBuilder(
+            settings=self.settings,
+            tokens=self.tokens,
+        )
+
 
 
 # Add and remove a classifier to corpus:

@@ -11,6 +11,6 @@ class TokenSegment(RawSegment):
         return self._value
 
 
-class LazyTokenSegmentDict(ComputeCascadeDict):
+class TokenDict(ComputeCascadeDict):
     def compute(self, key, value):
         return TokenSegment(self, value)

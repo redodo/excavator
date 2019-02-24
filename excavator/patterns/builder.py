@@ -1,19 +1,13 @@
 from ..regex import re
 
 from .base import resolve_pattern
-from .tokens import LazyTokenSegmentDict
 
 
 class PatternBuilder:
 
-    def __init__(self, settings=None, tokens=None):
-        # !! The settings and tokens of the pattern builder never differ from
-        # the settings and tokens of the classifier (merge?)
-        # TODO: Use corpus settings when they're ready
-        self.settings = self.default_settings.copy()
-        self.settings.update(settings or {})
-
-        self.tokens = LazyTokenSegmentDict(**(tokens or {}))
+    def __init__(self, settings, tokens):
+        self.settings = settings
+        self.tokens = tokens
 
     def get_flags(self):
         flags = 0
