@@ -109,14 +109,16 @@ def test_node_integrity():
 
 def test_root_settings():
     root = Root()
-    child = Node(settings={'posix': True})
-    child.parents.add(root)
+    a = Node(settings={'posix': True})
+    a.parents.add(root)
+    b = Node(settings={'case_sensitive': True})
+    b.parents.add(a)
 
-    assert child.settings['posix'] == True
-    assert child.settings['case_sensitive'] == False
-    assert child in root.children
+    assert a.settings['posix'] == True
+    assert a.settings['case_sensitive'] == False
+    assert a in root.children
 
-    print(child.settings.cascade_all())
+    print(b.settings.cascade_all())
 
 
 if __name__ == '__main__':
